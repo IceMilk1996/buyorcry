@@ -1,26 +1,129 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/*
+ * 디자인 언어 — 토스의 구조 + 약간의 귀여움
+ *
+ * 토스에서 가져온 것: 회색 배경 위 흰 카드, 큰 숫자와 작은 단위,
+ *   넉넉한 여백, 하단 고정 풀와이드 버튼, 절제된 색.
+ * 귀여움을 더한 것: 더 큰 라운드, 스프링 모션, 마스코트(봉이), 민트 포인트.
+ *
+ * 색 관습은 한국 증시를 따른다 — 상승·매수는 빨강, 하락·매도는 파랑.
+ */
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+@theme {
+  --color-bg: #f2f4f6;
+  --color-card: #ffffff;
+  --color-line: #eaecef;
+
+  --color-ink: #191f28;
+  --color-ink2: #4e5968;
+  --color-ink3: #8b95a1;
+
+  --color-brand: #3182f6;
+  --color-brandweak: #e8f2fe;
+
+  --color-up: #f04452;
+  --color-upweak: #fdecee;
+  --color-down: #3182f6;
+  --color-downweak: #e8f2fe;
+
+  --color-mint: #00c9a7;
+  --color-mintweak: #e3f9f4;
+  --color-butter: #ffd233;
+
+  --radius-card: 24px;
+  --radius-btn: 16px;
+
+  --font-sans: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont,
+    "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --color-bg: #17171c;
+    --color-card: #232329;
+    --color-line: #32323a;
+
+    --color-ink: #edeef0;
+    --color-ink2: #b0b4bb;
+    --color-ink3: #7c828c;
+
+    --color-brandweak: #1c2c44;
+    --color-upweak: #3a2126;
+    --color-downweak: #1c2c44;
+    --color-mintweak: #14322d;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+html {
+  -webkit-text-size-adjust: 100%;
 }
+
+body {
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  /* 숫자가 바뀔 때 폭이 흔들리지 않게 — 자산·수익률이 매 턴 갱신된다 */
+  font-variant-numeric: tabular-nums;
+  overscroll-behavior-y: none;
+}
+
+/* ── 모션 ─────────────────────────────────────────────
+   토스의 절제 + 살짝 튀는 스프링. 과하면 금방 질린다. */
+
+@keyframes pop-in {
+  0% { transform: scale(0.86) translateY(8px); opacity: 0; }
+  60% { transform: scale(1.03) translateY(0); opacity: 1; }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+@keyframes rise-in {
+  from { transform: translateY(12px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes bob {
+  0%, 100% { transform: translateY(0) rotate(-1.5deg); }
+  50% { transform: translateY(-6px) rotate(1.5deg); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-4px); }
+  40% { transform: translateX(4px); }
+  60% { transform: translateX(-3px); }
+  80% { transform: translateX(3px); }
+}
+
+@keyframes candle-drop {
+  from { transform: translateY(-10px) scaleY(0.7); opacity: 0; }
+  to { transform: translateY(0) scaleY(1); opacity: 1; }
+}
+
+@keyframes sheen {
+  from { background-position: 200% 0; }
+  to { background-position: -200% 0; }
+}
+
+.anim-pop { animation: pop-in 0.42s cubic-bezier(0.22, 1.2, 0.36, 1) both; }
+.anim-rise { animation: rise-in 0.34s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.anim-bob { animation: bob 3.2s ease-in-out infinite; }
+.anim-shake { animation: shake 0.4s ease-in-out; }
+.anim-candle { animation: candle-drop 0.26s cubic-bezier(0.22, 1.2, 0.36, 1) both; }
+
+/* 눌리는 느낌 — 토스 버튼의 핵심 */
+.pressable {
+  transition: transform 0.12s cubic-bezier(0.2, 0, 0, 1), background-color 0.15s, opacity 0.15s;
+}
+.pressable:active:not(:disabled) { transform: scale(0.96); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* 스크롤바 정리 */
+::-webkit-scrollbar { width: 0; height: 0; }

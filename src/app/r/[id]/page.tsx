@@ -1,0 +1,112 @@
+import Link from 'next/link';
+import type { Metadata } from 'next';
+import { compressActions, getShare, toPublic } from '@/lib/server/share';
+import { Mascot, moodFor } from '@/components/Mascot';
+
+export const dynamic = 'force-dynamic';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const rec = getShare(id);
+  if (!rec) return { title: '차트게임' };
+  const pct = `${rec.alpha >= 0 ? '+' : ''}${(rec.alpha * 100).toFixed(1)}%`;
+  return {
+    title: `존버보다 ${pct} — 차트게임`,
+    description: '종목도 시기도 가린 과거 차트로 매매하고, 존버와 비교당하는 게임.',
+  };
+}
+
+/**
+ * 공유 링크로 들어온 사람이 보는 화면.
+ *
+ * ⚠️ 종목·기간·차트·수익률은 절대 렌더링하지 않는다.
+ *    데일리는 전원이 같은 차트를 풀기 때문에, 아직 안 푼 사람이 이 페이지를 열면
+ *    게임이 끝나버린다. 보여주는 성적은 알파 하나뿐이다.
+ */
+export default async function SharePage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const rec = getShare(id);
+
+  if (!rec) {
+    return (
+      <main className="flex flex-1 flex-col items-center justify-center px-8 text-center">
+        <p className="text-[17px] font-bold">결과를 찾을 수 없어요</p>
+        <p className="mt-2 text-[14px] leading-relaxed text-ink3">
+          링크가 만료됐거나 잘못된 주소예요.
+        </p>
+        <Link
+          href="/"
+          className="pressable mt-7 flex h-[54px] items-center justify-center rounded-btn bg-brand px-9 text-[16px] font-bold text-white"
+        >
+          나도 해보기
+        </Link>
+      </main>
+    );
+  }
+
+  const r = toPublic(rec);
+  const { mood, tone } = moodFor(r.alpha);
+  const win = r.alpha >= 0;
+  const pct = `${r.alpha >= 0 ? '+' : ''}${(r.alpha * 100).toFixed(1)}%`;
+
+  return (
+    <main className="flex flex-1 flex-col px-5 pb-[max(20px,env(safe-area-inset-bottom))] pt-8">
+      <p className="text-[13px] font-bold tracking-wide text-ink3">차트게임</p>
+
+      <section className="anim-pop mt-4 rounded-card bg-card p-7 text-center">
+        <Mascot mood={mood} tone={tone} size={92} className="mx-auto anim-bob" />
+
+        <p className="mt-5 text-[17px] font-bold text-ink2">존버보다</p>
+        <p
+          className={`mt-1 text-[52px] font-bold leading-none tracking-tight ${
+            win ? 'text-up' : 'text-down'
+          }`}
+        >
+          {pct}
+        </p>
+        <p className="mt-2 text-[17px] font-bold text-ink2">
+          {win ? '잘했어요' : '못했어요'}
+        </p>
+
+        <div className="mt-5 inline-flex rounded-full bg-bg px-4 py-2 text-[14px] font-bold text-ink">
+          {r.rank.label}
+        </div>
+
+        <div className="mt-6 flex justify-center gap-1.5">
+          {compressActions(r.actions).map((a, i) => (
+            <span
+              key={i}
+              className={`h-3.5 w-3.5 rounded-[5px] ${
+                a === 'BUY' ? 'bg-up' : a === 'SELL' ? 'bg-down' : 'bg-line'
+              }`}
+            />
+          ))}
+        </div>
+        <p className="mt-2.5 text-[12px] text-ink3">
+          <span className="font-bold text-up">매수</span> ·{' '}
+          <span className="font-bold text-down">매도</span> · 관망
+        </p>
+      </section>
+
+      {/* 성적만 보여주고 정답은 감춘다 — 이게 이 페이지의 핵심 */}
+      <p className="mt-4 text-center text-[13px] leading-relaxed text-ink3">
+        어떤 종목이었는지는 알려드릴 수 없어요.
+        <br />
+        직접 풀어보면 알게 돼요.
+      </p>
+
+      <div className="flex-1" />
+
+      <Link
+        href="/"
+        className="pressable mt-6 flex h-[58px] items-center justify-center rounded-btn bg-brand text-[17px] font-bold text-white"
+      >
+        나도 해보기
+      </Link>
+    </main>
+  );
+}
