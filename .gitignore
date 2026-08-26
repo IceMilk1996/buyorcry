@@ -58,3 +58,11 @@ _to_delete/
 
 # 예시 파일은 커밋한다
 !.env.example
+
+# 루트에 흩어둔 일회성 디버그 스크립트
+/bench.ts
+/cashcheck.ts
+/diag.ts
+/dist.ts
+/ranks.ts
+/tiers.ts
