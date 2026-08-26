@@ -52,3 +52,9 @@ _to_delete/
 
 # 로컬 에이전트 설정
 .claude/
+
+# 예시 파일은 커밋한다
+!.env.example
+
+# 예시 파일은 커밋한다
+!.env.example
