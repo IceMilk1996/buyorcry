@@ -12,10 +12,10 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { id } = await params;
   const rec = getShare(id);
-  if (!rec) return { title: '차트게임' };
+  if (!rec) return { title: '살껄팔껄' };
   const pct = `${rec.alpha >= 0 ? '+' : ''}${(rec.alpha * 100).toFixed(1)}%`;
   return {
-    title: `존버보다 ${pct} — 차트게임`,
+    title: `존버보다 ${pct} — 살껄팔껄`,
     description: '종목도 시기도 가린 과거 차트로 매매하고, 존버와 비교당하는 게임.',
   };
 }
@@ -55,7 +55,7 @@ export default async function SharePage({ params }: { params: Promise<{ id: stri
 
   return (
     <main className="flex flex-1 flex-col px-5 pb-[max(20px,env(safe-area-inset-bottom))] pt-8">
-      <p className="text-[13px] font-bold tracking-wide text-ink3">차트게임</p>
+      <p className="text-[13px] font-bold tracking-wide text-ink3">살껄팔껄</p>
 
       <section className="anim-pop mt-4 rounded-card bg-card p-7 text-center">
         <Mascot mood={mood} tone={tone} size={92} className="mx-auto anim-bob" />

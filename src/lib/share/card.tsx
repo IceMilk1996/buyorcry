@@ -26,7 +26,7 @@ const INK3 = '#8b95a1';
  * 헤더에서 읽으면 설정할 것도 없고 틀릴 수도 없다.
  */
 export function originFromHeaders(h: Headers): string {
-  const host = h.get('x-forwarded-host') ?? h.get('host') ?? 'chart-game';
+  const host = h.get('x-forwarded-host') ?? h.get('host') ?? 'buyorcry';
   return host;
 }
 
@@ -96,7 +96,7 @@ export function ShareCard({ alpha, rankLabel, actions, width, height, origin, va
 
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: wide ? 'flex-start' : 'center' }}>
         <div style={{ display: 'flex', fontSize: s(26), fontWeight: 700, color: INK3, letterSpacing: s(1) }}>
-          차트게임
+          살껄팔껄
         </div>
 
         <div style={{ display: 'flex', marginTop: s(14), fontSize: s(40), fontWeight: 700, color: INK }}>

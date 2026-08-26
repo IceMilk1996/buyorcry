@@ -63,7 +63,6 @@ export function makeSampleSeries(symbol: string, name: string, length: number, s
       h: round(high),
       l: round(low),
       c: round(close),
-      v: Math.floor(100_000 + rng() * 2_000_000),
     });
     price = close;
   }

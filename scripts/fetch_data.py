@@ -1,5 +1,5 @@
 """
-코스피200 일봉/주봉 수집 -> data/series/*.json
+코스피200 일봉 수집 -> data/series/{종목코드}.json
 
 ⚠️ 이 스크립트는 반드시 본인 맥 터미널에서 직접 실행하세요.
    Cowork 작업환경과 클라우드에서는 네이버/KRX 접근이 차단되어 있습니다.
@@ -9,7 +9,8 @@
     pip install -r scripts/requirements.txt
     python scripts/fetch_data.py --limit 200 --start 2015-01-01
 
-출력: data/series/{종목코드}_{D|W}.json
+출력: data/series/{종목코드}.json  (컬럼 포맷, 일봉만)
+      주봉은 앱이 읽을 때 일봉에서 만든다 — src/lib/server/series.ts
 """
 from __future__ import annotations
 
@@ -56,6 +57,11 @@ def load_universe(limit: int) -> list[tuple[str, str]]:
     return [(str(r[code_col]).zfill(6), str(r[name_col])) for _, r in df.iterrows()]
 
 
+def compact(x: float) -> float | int:
+    """1000원 이상은 원 단위로 반올림. 그 위 호가 단위가 최소 5원이라 소수점이 무의미하다."""
+    return int(round(x)) if x >= 1000 else round(x, 2)
+
+
 def to_candles(df: pd.DataFrame) -> list[dict]:
     out = []
     for idx, r in df.iterrows():
@@ -66,20 +72,13 @@ def to_candles(df: pd.DataFrame) -> list[dict]:
         if not all(v > 0 for v in (o, h, l, c)):
             continue
         out.append({
-            "t": pd.Timestamp(idx).strftime("%Y-%m-%d"),
-            "o": round(o, 2), "h": round(h, 2), "l": round(l, 2), "c": round(c, 2),
-            "v": int(r.get("Volume", 0) or 0),
+            "t": int(pd.Timestamp(idx).strftime("%Y%m%d")),
+            "o": compact(o), "h": compact(h), "l": compact(l), "c": compact(c),
         })
     return out
 
 
-def to_weekly(df: pd.DataFrame) -> pd.DataFrame:
-    return df.resample("W-FRI").agg(
-        {"Open": "first", "High": "max", "Low": "min", "Close": "last", "Volume": "sum"}
-    ).dropna()
-
-
-def suspicious_bars(candles: list[dict]) -> list[tuple[str, float]]:
+def suspicious_bars(candles: list[dict]) -> list[tuple[int, float]]:
     """미조정 주가 의심 지점 — 눈으로 확인해야 하는 목록"""
     bad = []
     for i in range(1, len(candles)):
@@ -92,12 +91,26 @@ def suspicious_bars(candles: list[dict]) -> list[tuple[str, float]]:
     return bad
 
 
-def write_series(symbol: str, name: str, interval: str, candles: list[dict]) -> None:
+def write_series(symbol: str, name: str, candles: list[dict]) -> None:
+    """컬럼(배열 다발) 포맷으로 쓴다.
+
+    캔들마다 객체를 쓰면 키 이름이 봉 수만큼 반복돼 197종목에 43MB 가 된다.
+    같은 데이터가 컬럼 포맷이면 16MB 라서 깃 저장소에 그냥 올릴 수 있다.
+    읽는 쪽은 src/lib/server/series.ts.
+    """
     OUT_DIR.mkdir(parents=True, exist_ok=True)
-    path = OUT_DIR / f"{symbol}_{interval}.json"
+    path = OUT_DIR / f"{symbol}.json"
     path.write_text(
         json.dumps(
-            {"symbol": symbol, "name": name, "interval": interval, "candles": candles},
+            {
+                "s": symbol,
+                "n": name,
+                "t": [x["t"] for x in candles],
+                "o": [x["o"] for x in candles],
+                "h": [x["h"] for x in candles],
+                "l": [x["l"] for x in candles],
+                "c": [x["c"] for x in candles],
+            },
             ensure_ascii=False,
         ),
         encoding="utf-8",
@@ -115,7 +128,7 @@ def main() -> None:
     universe = load_universe(args.limit)
     print(f"  {len(universe)}종목\n")
 
-    all_suspects: list[tuple[str, str, str, float]] = []
+    all_suspects: list[tuple[str, str, int, float]] = []
     ok = 0
 
     for i, (code, name) in enumerate(universe, 1):
@@ -130,16 +143,14 @@ def main() -> None:
             continue
 
         daily = to_candles(df)
-        weekly = to_candles(to_weekly(df))
 
-        write_series(code, name, "D", daily)
-        write_series(code, name, "W", weekly)
+        write_series(code, name, daily)
 
         for t, move in suspicious_bars(daily):
             all_suspects.append((code, name, t, move))
 
         ok += 1
-        print(f"[{i:3}/{len(universe)}] {code} {name}: 일봉 {len(daily)} / 주봉 {len(weekly)}")
+        print(f"[{i:3}/{len(universe)}] {code} {name}: 일봉 {len(daily)}")
         time.sleep(args.sleep)
 
     print(f"\n완료: {ok}종목 -> {OUT_DIR}")

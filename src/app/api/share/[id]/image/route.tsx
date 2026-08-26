@@ -31,7 +31,7 @@ export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }
       ...size,
       fonts: loadFonts(),
       headers: {
-        'Content-Disposition': `attachment; filename="chartgame-${id}.png"`,
+        'Content-Disposition': `attachment; filename="buyorcry-${id}.png"`,
         'Cache-Control': 'public, max-age=31536000, immutable',
       },
     }

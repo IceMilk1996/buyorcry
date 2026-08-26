@@ -40,8 +40,7 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# 수집 데이터 (용량이 커서 커밋하지 않음)
-/data/series/
+# 수집 데이터는 커밋한다 (컬럼 포맷 16MB). 배포 환경에서 파일로 읽어야 하기 때문.
 
 # python
 .venv/
@@ -52,9 +51,6 @@ _to_delete/
 
 # 로컬 에이전트 설정
 .claude/
-
-# 예시 파일은 커밋한다
-!.env.example
 
 # 예시 파일은 커밋한다
 !.env.example

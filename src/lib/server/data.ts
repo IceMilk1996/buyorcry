@@ -2,39 +2,37 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { Interval, Puzzle, Series, WINDOW_SIZE } from '../game/types';
 import { makePuzzle, validateWindow } from '../game/puzzle';
+import { readSeriesFile } from './series';
 
 /**
  * 서버 전용 데이터 로더.
  *
- * data/series 는 394개 파일 54MB다. 전부 메모리에 올리면 안 되므로
+ * data/series 는 197개 파일 17MB다. 전부 메모리에 올리면 안 되므로
  * 파일 목록만 인덱싱하고, 문제를 뽑을 때 필요한 파일 하나씩만 읽는다.
+ * 파일에는 일봉만 있고 주봉은 읽을 때 만든다(series.ts 참고).
  */
 
 const DIR = path.join(process.cwd(), 'data', 'series');
 
-let index: Record<Interval, string[]> | null = null;
-const cache = new Map<string, Series>();
+let index: string[] | null = null;
+const cache = new Map<string, { D: Series; W: Series }>();
 const CACHE_MAX = 24;
 
-function buildIndex(): Record<Interval, string[]> {
+function buildIndex(): string[] {
   if (index) return index;
   if (!fs.existsSync(DIR)) {
     throw new Error(
       'data/series 가 없습니다. 로컬 터미널에서 `npm run fetch` 를 먼저 돌리세요.'
     );
   }
-  const files = fs.readdirSync(DIR).filter((f) => f.endsWith('.json'));
-  index = {
-    D: files.filter((f) => f.endsWith('_D.json')),
-    W: files.filter((f) => f.endsWith('_W.json')),
-  };
+  index = fs.readdirSync(DIR).filter((f) => f.endsWith('.json'));
   return index;
 }
 
-function loadFile(name: string): Series {
+function loadFile(name: string): { D: Series; W: Series } {
   const hit = cache.get(name);
   if (hit) return hit;
-  const s = JSON.parse(fs.readFileSync(path.join(DIR, name), 'utf8')) as Series;
+  const s = readSeriesFile(DIR, name);
   if (cache.size >= CACHE_MAX) cache.delete(cache.keys().next().value!);
   cache.set(name, s);
   return s;
@@ -50,13 +48,12 @@ export function pickPuzzleServer(
   rng: () => number,
   maxTries = 300
 ): { puzzle: Puzzle; series: Series } | null {
-  const idx = buildIndex();
-  const interval: Interval = rng() < 0.5 ? 'D' : 'W';
-  const files = idx[interval].length > 0 ? idx[interval] : [...idx.D, ...idx.W];
+  const files = buildIndex();
   if (files.length === 0) return null;
+  const interval: Interval = rng() < 0.5 ? 'D' : 'W';
 
   for (let i = 0; i < maxTries; i++) {
-    const series = loadFile(files[Math.floor(rng() * files.length)]);
+    const series = loadFile(files[Math.floor(rng() * files.length)])[interval];
     const maxStart = series.candles.length - WINDOW_SIZE;
     if (maxStart <= 0) continue;
     const startIndex = Math.floor(rng() * maxStart);

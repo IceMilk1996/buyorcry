@@ -7,8 +7,6 @@
  *
  *   npx tsx tools/measure-decisions.ts [--samples 800]
  */
-import fs from 'node:fs';
-import path from 'node:path';
 import {
   Candle,
   FEE_RATE,
@@ -20,6 +18,7 @@ import {
 import { makeRng, validateWindow } from '../src/lib/game/puzzle';
 import { holdReturnOf, playAll } from '../src/lib/game/engine';
 import { alwaysHold, meanReversion, random, smaCross } from '../src/lib/game/strategies';
+import { loadAllSeries } from '../src/lib/server/series';
 
 const argv = process.argv.slice(2);
 const SAMPLES = argv.includes('--samples') ? Number(argv[argv.indexOf('--samples') + 1]) : 800;
@@ -90,13 +89,7 @@ function oracle(play: Candle[]) {
   };
 }
 
-function loadSeries(): Series[] {
-  const dir = path.join(process.cwd(), 'data', 'series');
-  return fs
-    .readdirSync(dir)
-    .filter((f) => f.endsWith('.json'))
-    .map((f) => JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8')) as Series);
-}
+const loadSeries = (): Series[] => loadAllSeries();
 
 const mean = (xs: number[]) => xs.reduce((a, b) => a + b, 0) / (xs.length || 1);
 const med = (xs: number[]) => [...xs].sort((a, b) => a - b)[Math.floor(xs.length / 2)] ?? 0;

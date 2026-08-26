@@ -13,6 +13,7 @@ import { Series, REVEAL_COUNT, WINDOW_SIZE } from '../src/lib/game/types';
 import { validateWindow, makeRng, computeStats, difficultyOf, DIFFICULTY_THRESHOLDS } from '../src/lib/game/puzzle';
 import { playAll } from '../src/lib/game/engine';
 import { makeSampleUniverse } from '../src/lib/game/sample';
+import { loadAllSeries } from '../src/lib/server/series';
 import { allCash, alwaysHold, meanReversion, random, smaCross, Strategy } from '../src/lib/game/strategies';
 
 const argv = process.argv.slice(2);
@@ -26,12 +27,9 @@ const SEED = arg('seed', 20260825);
 
 function loadSeries(): { data: Series[]; source: string } {
   const dir = path.join(process.cwd(), 'data', 'series');
-  if (fs.existsSync(dir)) {
-    const files = fs.readdirSync(dir).filter((f) => f.endsWith('.json'));
-    if (files.length > 0) {
-      const data = files.map((f) => JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8')) as Series);
-      return { data, source: `실데이터 ${files.length}종목` };
-    }
+  if (fs.existsSync(dir) && fs.readdirSync(dir).some((f) => f.endsWith('.json'))) {
+    const data = loadAllSeries(dir);
+    return { data, source: `실데이터 ${data.length / 2}종목` };
   }
   return { data: makeSampleUniverse(), source: '합성 데이터 (실데이터 없음)' };
 }

@@ -146,8 +146,8 @@ export function validateWindow(
  * 종목 풀을 바꾸면 `npm run simulate` 의 "변동성 분위" 출력으로 다시 맞출 것.
  */
 export const DIFFICULTY_THRESHOLDS: Record<Interval, { easy: number; normal: number }> = {
-  D: { easy: 0.0265, normal: 0.035 },
-  W: { easy: 0.0419, normal: 0.0568 },
+  D: { easy: 0.0255, normal: 0.0338 },
+  W: { easy: 0.0401, normal: 0.0554 },
 };
 
 export function difficultyOf(volatility: number, interval: Interval = 'D'): Difficulty {

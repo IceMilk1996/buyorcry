@@ -4,7 +4,7 @@ import { ShareCard, loadFonts, originFromHeaders } from '@/lib/share/card';
 import { headers } from 'next/headers';
 
 export const runtime = 'nodejs';
-export const alt = '차트게임 결과';
+export const alt = '살껄팔껄 결과';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 

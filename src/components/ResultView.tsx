@@ -135,7 +135,7 @@ export function ResultView({
       const res = await fetch(`/api/share/${shareId}/image`);
       if (!res.ok) throw new Error('이미지를 만들지 못했어요');
       const blob = await res.blob();
-      const file = new File([blob], `chartgame-${shareId}.png`, { type: 'image/png' });
+      const file = new File([blob], `buyorcry-${shareId}.png`, { type: 'image/png' });
 
       if (navigator.canShare?.({ files: [file] })) {
         await navigator.share({ files: [file] });
@@ -368,7 +368,7 @@ export function shareText(r: ResultPayload): string {
     cells.push(chunk.includes('BUY') ? '🟥' : chunk.includes('SELL') ? '🟦' : '⬜');
   }
   return [
-    `📈 차트게임`,
+    `📈 살껄팔껄`,
     `${fmtPct(r.myReturn)} (존버 대비 ${fmtPct(r.alpha)})`,
     ``,
     cells.join(''),

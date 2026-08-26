@@ -6,7 +6,6 @@ export type Candle = {
   h: number;
   l: number;
   c: number;
-  v: number;
 };
 
 export type Interval = 'D' | 'W';

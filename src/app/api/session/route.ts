@@ -88,6 +88,6 @@ export async function POST(req: Request) {
 }
 
 /** 날짜를 지우고 가격만 남긴다 */
-function strip(c: { o: number; h: number; l: number; c: number; v: number }) {
-  return { o: c.o, h: c.h, l: c.l, c: c.c, v: c.v };
+function strip(c: { o: number; h: number; l: number; c: number }) {
+  return { o: c.o, h: c.h, l: c.l, c: c.c };
 }

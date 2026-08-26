@@ -2,14 +2,11 @@
  * 봉 간격별 변동성·인접봉 변동 분포 측정. 임계값 재보정용.
  *   npx tsx tools/probe-intervals.ts
  */
-import fs from 'node:fs';
-import path from 'node:path';
 import { Series, REVEAL_COUNT, WINDOW_SIZE } from '../src/lib/game/types';
 import { computeStats, makeRng, validateWindow } from '../src/lib/game/puzzle';
+import { loadAllSeries } from '../src/lib/server/series';
 
-const dir = path.join(process.cwd(), 'data', 'series');
-const all: Series[] = fs.readdirSync(dir).filter(f => f.endsWith('.json'))
-  .map(f => JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8')));
+const all: Series[] = loadAllSeries();
 
 const q = (xs: number[], p: number) => [...xs].sort((a,b)=>a-b)[Math.min(xs.length-1, Math.floor(xs.length*p))];
 

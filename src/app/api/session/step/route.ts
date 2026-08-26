@@ -88,7 +88,7 @@ export async function POST(req: Request) {
   }
 
   return NextResponse.json({
-    candle: { o: candle.o, h: candle.h, l: candle.l, c: candle.c, v: candle.v },
+    candle: { o: candle.o, h: candle.h, l: candle.l, c: candle.c },
     appliedAction: applied,
     entryPrice: s.entryPrice ?? null,
     turn: s.state.turn,
@@ -115,7 +115,6 @@ export async function POST(req: Request) {
             h: c.h,
             l: c.l,
             c: c.c,
-            v: c.v,
           })),
         }
       : null,
