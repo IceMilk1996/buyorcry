@@ -97,13 +97,16 @@ export function finalize(s: GameState, playCandles: Candle[]): GameResult {
   const holdReturn = holdReturnOf(playCandles);
   const alpha = myReturn - holdReturn;
 
+  const tradeCount = s.actions.filter((a) => a !== 'HOLD').length;
+
   return {
     finalEquity,
     myReturn,
     holdReturn,
     alpha,
-    rank: rankOf(alpha),
+    rank: rankOf(alpha, myReturn, tradeCount),
     actions: s.actions,
+    tradeCount,
   };
 }
 
