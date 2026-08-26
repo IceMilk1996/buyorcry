@@ -1,36 +1,61 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# chart-game
 
-## Getting Started
+종목명과 시기를 가린 과거 차트를 한 봉씩 넘기며 매매하고,
+끝나면 **"그냥 들고 있었을 때"와 비교당하는** 웹 게임.
 
-First, run the development server:
+기획서: 프로젝트 문서 `claude/차트게임_기획서.md`
+
+## 지금 단계 (1주차)
+
+목표는 플레이 가능한 화면이 아니라 **"필터가 재미있는 구간을 뽑는가"** 를 확인하는 것.
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run simulate                  # 합성 데이터로 필터·전략 검증
+npm run simulate -- --samples 3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+출력에서 볼 것:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **존버 알파가 0% 근처**여야 정상 (수수료만큼 미세한 음수)
+- **무작위와 이평교차의 중앙값이 뚜렷하게 갈리면** → 판단이 결과를 바꾼다 = 좋은 구간
+- 모든 전략이 좁게 뭉치면 → 뭘 해도 똑같다 = 지루한 구간. `src/lib/game/puzzle.ts` 의 `FILTERS` 를 조일 것
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 실데이터 수집
 
-## Learn More
+⚠️ **본인 맥 터미널에서 직접 실행하세요.** Cowork 작업환경과 클라우드에서는
+네이버·KRX 접근이 차단되어 있어 수집이 되지 않습니다.
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+python3 -m venv .venv && source .venv/bin/activate
+pip install -r scripts/requirements.txt
+python scripts/fetch_data.py --limit 200 --start 2015-01-01
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+`data/series/*.json` 이 생기면 `npm run simulate` 이 자동으로 실데이터를 씁니다.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+수집 후 **인접봉 40% 초과 변동 목록**이 출력됩니다. 건수가 많으면 수정주가가
+아닐 가능성이 있으니 확인하세요. (액면분할 미조정 = 가짜 폭락, 기획서 6.2)
 
-## Deploy on Vercel
+## 구조
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```
+src/lib/game/
+  types.ts        캔들·게임상태·랭크, 상수(자본 100만 / 수수료 0.05% / 20+30봉)
+  engine.ts       게임 로직 — 전부 순수 함수. 화면과 완전 분리
+  puzzle.ts       구간 필터 6종, 결정적 난수(데일리용)
+  strategies.ts   기준 전략 5종 — 필터 품질 판정용
+  sample.ts       합성 캔들 생성기 (실데이터 전 검증용)
+tools/
+  simulate.ts     필터 통과율 · 난이도 분포 · 전략별 알파 분포
+scripts/
+  fetch_data.py   코스피200 일봉·주봉 수집 + 수정주가 검증
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### 설계 원칙 (깨면 안 되는 것)
+
+1. **게임 로직은 순수 함수.** 렌더링 없이 수천 판 돌릴 수 있어야 밸런싱이 된다.
+2. **점수는 절대 수익률이 아니라 초과수익(알파).** 폭등 구간이 걸린 사람이
+   가만히 있어도 이기는 걸 막는다.
+3. **미래 캔들을 클라이언트로 보내지 않는다.** 개발자도구에 그대로 보인다.
+   턴마다 서버에서 하나씩 받고, 자산 계산은 서버가 소유한다. (기획서 7.1)

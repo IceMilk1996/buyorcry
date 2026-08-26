@@ -46,3 +46,9 @@ next-env.d.ts
 # python
 .venv/
 __pycache__/
+
+# 이 환경에서 삭제가 막혀 임시로 모아둔 것 — 직접 지우면 됨
+_to_delete/
+
+# 로컬 에이전트 설정
+.claude/
