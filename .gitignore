@@ -39,3 +39,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# 수집 데이터 (용량이 커서 커밋하지 않음)
+/data/series/
+
+# python
+.venv/
+__pycache__/
