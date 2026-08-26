@@ -10,7 +10,8 @@
     "simulate": "tsx tools/simulate.ts",
     "fetch": "python3 scripts/fetch_data.py",
     "check:picker": "tsx tools/check-picker.ts",
-    "probe:intervals": "tsx tools/probe-intervals.ts"
+    "probe:intervals": "tsx tools/probe-intervals.ts",
+    "measure": "tsx tools/measure-decisions.ts"
   },
   "dependencies": {
     "next": "16.3.2",
