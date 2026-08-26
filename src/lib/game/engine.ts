@@ -36,21 +36,34 @@ export function canApply(s: GameState, action: Action): boolean {
 
 /**
  * 한 턴 진행.
- * @param price 이번 턴 캔들의 종가 = 체결가
+ *
+ * @param execPrice 체결가 — 이번 턴에 새로 열리는 봉의 **시가**
+ * @param markPrice 평가가 — 그 봉의 **종가**
+ *
+ * 체결가와 평가가를 나누는 이유:
+ *   플레이어는 다음 봉이 어떻게 될지 모르는 상태에서 액션을 고른다.
+ *   그 주문이 다음 봉 시가에 체결되어야, 자기가 고른 직후의 봉 움직임에
+ *   그대로 참여하게 된다. 종가에 체결하면 방금 나타난 봉의 등락에서 제외되어
+ *   "샀는데 이 봉이 오른 게 나랑 무슨 상관이지?" 하는 상태가 된다.
  *
  * 불가능한 액션(보유 중 매수 등)은 조용히 HOLD로 기록된다.
  * UI에서는 해당 버튼을 비활성화할 것.
  */
-export function step(s: GameState, action: Action, price: number): GameState {
+export function step(
+  s: GameState,
+  action: Action,
+  execPrice: number,
+  markPrice: number = execPrice
+): GameState {
   let { cash, qty } = s;
   let applied: Action = 'HOLD';
 
   if (action === 'BUY' && canApply(s, 'BUY')) {
-    qty = (cash * (1 - FEE_RATE)) / price;
+    qty = (cash * (1 - FEE_RATE)) / execPrice;
     cash = 0;
     applied = 'BUY';
   } else if (action === 'SELL' && canApply(s, 'SELL')) {
-    cash = qty * price * (1 - FEE_RATE);
+    cash = qty * execPrice * (1 - FEE_RATE);
     qty = 0;
     applied = 'SELL';
   }
@@ -60,17 +73,17 @@ export function step(s: GameState, action: Action, price: number): GameState {
     cash,
     qty,
     actions: [...s.actions, applied],
-    equityCurve: [...s.equityCurve, cash + qty * price],
+    equityCurve: [...s.equityCurve, cash + qty * markPrice],
   };
 }
 
 /**
  * 홀드(존버) 수익률.
- * 1턴 종가에 사서 마지막 턴 종가에 파는 것과 동일하게, 왕복 수수료를 포함한다.
- * 이래야 플레이어와 같은 조건에서 비교된다.
+ * 1턴에 매수(= 첫 봉 시가 체결)해서 마지막 봉 종가까지 들고 간 것과 동일하게,
+ * 왕복 수수료를 포함한다. 이래야 플레이어와 정확히 같은 조건에서 비교된다.
  */
 export function holdReturnOf(playCandles: Candle[]): number {
-  const first = playCandles[0].c;
+  const first = playCandles[0].o;
   const last = playCandles[playCandles.length - 1].c;
   const qty = (INITIAL_CAPITAL * (1 - FEE_RATE)) / first;
   const equity = qty * last * (1 - FEE_RATE);
@@ -98,7 +111,7 @@ export function finalize(s: GameState, playCandles: Candle[]): GameResult {
 export function playAll(playCandles: Candle[], actions: Action[]): GameResult {
   let s = createGame();
   playCandles.forEach((candle, i) => {
-    s = step(s, actions[i] ?? 'HOLD', candle.c);
+    s = step(s, actions[i] ?? 'HOLD', candle.o, candle.c);
   });
   return finalize(s, playCandles);
 }
