@@ -23,7 +23,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: '잘못된 요청입니다.' }, { status: 400 });
   }
 
-  const s = getSession(sessionId);
+  const s = await getSession(sessionId);
   if (!s) {
     return NextResponse.json(
       { error: '세션을 찾을 수 없습니다. 새로 시작해주세요.' },
@@ -44,7 +44,7 @@ export async function POST(req: Request) {
 
   const done = s.state.turn >= PLAY_COUNT;
   s.done = done;
-  putSession(s);
+  await putSession(s);
 
   const equity = s.state.equityCurve[s.state.equityCurve.length - 1];
   const play = s.window.slice(REVEAL_COUNT);
@@ -59,7 +59,7 @@ export async function POST(req: Request) {
 
     // 데일리만 순위가 성립한다 — 전원이 같은 차트를 풀기 때문
     if (s.mode === 'daily' && s.userId) {
-      standing = submitDaily(s.date, {
+      standing = await submitDaily(s.date, {
         userId: s.userId,
         nick: s.nick,
         alpha: r.alpha,
@@ -69,7 +69,7 @@ export async function POST(req: Request) {
       });
     }
 
-    putShare({
+    await putShare({
       id: shareId,
       createdAt: Date.now(),
       alpha: r.alpha,

@@ -10,7 +10,7 @@ export const runtime = 'nodejs';
  */
 export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }) {
   const { id } = await ctx.params;
-  const rec = getShare(id);
+  const rec = await getShare(id);
   const origin = originFromHeaders(req.headers);
   if (!rec) return new Response('not found', { status: 404 });
 

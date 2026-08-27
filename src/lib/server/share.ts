@@ -1,4 +1,5 @@
 import { Action, Interval, Difficulty, Rank } from '../game/types';
+import { getJSON, setJSON } from './kv';
 
 /**
  * 공유된 결과 저장소.
@@ -52,32 +53,17 @@ export function toPublic(r: ShareRecord): PublicShare {
   };
 }
 
-const TTL_MS = 30 * 24 * 60 * 60 * 1000;
+/** 링크는 오래 살아야 한다. 30일 뒤에는 알아서 사라진다 */
+const TTL_SEC = 30 * 24 * 60 * 60;
 
-/*
- * globalThis 에 매달아 두는 이유:
- *   ① 개발 중 HMR 로 모듈이 다시 평가되면 모듈 스코프 Map 은 초기화된다
- *   ② Next.js 는 서버 컴포넌트와 라우트 핸들러를 서로 다른 번들로 만든다.
- *      모듈 스코프에 두면 /api 에서 저장한 걸 /r/[id] 페이지가 못 읽는다.
- *      실제로 이것 때문에 공유 링크가 전부 '찾을 수 없음' 이 됐다.
- */
-const g = globalThis as typeof globalThis & { __shares?: Map<string, ShareRecord> };
-const shares: Map<string, ShareRecord> = (g.__shares ??= new Map());
+const key = (id: string) => `share:${id}`;
 
-/**
- * 지금은 프로세스 메모리다. 서버가 재시작하면 링크가 죽고,
- * 서버리스로 배포하면 인스턴스마다 따로 논다.
- * 링크 공유는 '다른 사람이 나중에 여는 것'이 전부이므로
- * 배포 전에 반드시 Vercel KV 같은 외부 저장소로 옮겨야 한다.
- */
-export function putShare(rec: ShareRecord): void {
-  const cutoff = Date.now() - TTL_MS;
-  for (const [k, v] of shares) if (v.createdAt < cutoff) shares.delete(k);
-  shares.set(rec.id, rec);
+export async function putShare(rec: ShareRecord): Promise<void> {
+  await setJSON(key(rec.id), rec, TTL_SEC);
 }
 
-export function getShare(id: string): ShareRecord | undefined {
-  return shares.get(id);
+export async function getShare(id: string): Promise<ShareRecord | null> {
+  return getJSON<ShareRecord>(key(id));
 }
 
 /** URL에 들어갈 짧은 id. 추측하기 어려우면 충분하다 */

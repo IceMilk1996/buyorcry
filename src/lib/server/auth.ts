@@ -1,5 +1,6 @@
 import { createHmac, randomUUID, timingSafeEqual } from 'node:crypto';
 import { cookies } from 'next/headers';
+import { getJSON, setJSON } from './kv';
 
 /**
  * 로그인.
@@ -18,8 +19,8 @@ export type User = { id: string; nick: string | null; provider: 'kakao' | 'dev' 
 const COOKIE = 'cg_uid';
 const MAX_AGE = 60 * 60 * 24 * 180;
 
-const g = globalThis as typeof globalThis & { __users?: Map<string, User> };
-const users: Map<string, User> = (g.__users ??= new Map());
+/** 계정은 만료시키지 않는다 — 쿠키(180일)보다 오래 살아야 한다 */
+const key = (id: string) => `user:${id}`;
 
 /**
  * 쿠키는 반드시 서명한다. 서명이 없으면 아무나 남의 회원번호를 쿠키에 써넣고
@@ -44,17 +45,29 @@ function unsign(raw: string): string | null {
   return id;
 }
 
+/**
+ * 쿠키 서명이 맞으면 그 회원번호는 우리가 발급한 것이다. 그러므로 저장소에
+ * 기록이 없어도(만료·초기화) 로그인을 깨뜨리지 않고 그 자리에서 되살린다.
+ * 예전처럼 저장소 조회 결과가 없다고 null 을 주면, 저장소가 한 번 비는
+ * 순간 모든 사용자가 로그아웃된다.
+ */
 export async function currentUser(): Promise<User | null> {
   const raw = (await cookies()).get(COOKIE)?.value;
   if (!raw) return null;
   const id = unsign(raw);
-  return id ? (users.get(id) ?? null) : null;
+  if (!id) return null;
+  const found = await getJSON<User>(key(id));
+  if (found) return found;
+  const provider: User['provider'] = id.startsWith('dev:') ? 'dev' : 'kakao';
+  const user: User = { id, nick: null, provider };
+  await setJSON(key(id), user);
+  return user;
 }
 
 export async function signIn(provider: 'kakao' | 'dev', providerId: string): Promise<User> {
   const id = `${provider}:${providerId}`;
-  const user = users.get(id) ?? { id, nick: null, provider };
-  users.set(id, user);
+  const user = (await getJSON<User>(key(id))) ?? { id, nick: null, provider };
+  await setJSON(key(id), user);
 
   (await cookies()).set(COOKIE, sign(id), {
     httpOnly: true,
@@ -70,11 +83,12 @@ export async function signOut(): Promise<void> {
   (await cookies()).delete(COOKIE);
 }
 
-export function setNick(id: string, nick: string): User | null {
-  const u = users.get(id);
+export async function setNick(id: string, nick: string): Promise<User | null> {
+  const u = await getJSON<User>(key(id));
   if (!u) return null;
-  u.nick = nick.trim().slice(0, 12);
-  return u;
+  const next: User = { ...u, nick: nick.trim().slice(0, 12) };
+  await setJSON(key(id), next);
+  return next;
 }
 
 /** 카카오 앱 등록이 끝났는지 */

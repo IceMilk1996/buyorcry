@@ -11,7 +11,7 @@ export async function generateMetadata({
   params: Promise<{ id: string }>;
 }): Promise<Metadata> {
   const { id } = await params;
-  const rec = getShare(id);
+  const rec = await getShare(id);
   if (!rec) return { title: '살껄팔껄' };
   const pct = `${rec.alpha >= 0 ? '+' : ''}${(rec.alpha * 100).toFixed(1)}%`;
   return {
@@ -29,7 +29,7 @@ export async function generateMetadata({
  */
 export default async function SharePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const rec = getShare(id);
+  const rec = await getShare(id);
 
   if (!rec) {
     return (

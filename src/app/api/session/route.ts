@@ -33,7 +33,7 @@ export async function POST(req: Request) {
       );
     }
     // 하루 1회는 서버가 막는다. 브라우저 기록으로는 시크릿 모드를 못 막는다
-    if (findTodayEntry(todayKST(), user.id)) {
+    if (await findTodayEntry(todayKST(), user.id)) {
       return NextResponse.json(
         { error: '오늘은 이미 참여하셨어요.', alreadyPlayed: true },
         { status: 409 }
@@ -57,7 +57,7 @@ export async function POST(req: Request) {
   const window = series.candles.slice(puzzle.startIndex, puzzle.startIndex + WINDOW_SIZE);
 
   const id = newSessionId();
-  putSession({
+  await putSession({
     id,
     symbol: puzzle.symbol,
     name: puzzle.name,

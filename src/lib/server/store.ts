@@ -1,4 +1,5 @@
 import { Candle, GameState, Interval } from '../game/types';
+import { getJSON, setJSON } from './kv';
 
 /**
  * 세션 저장소.
@@ -7,9 +8,8 @@ import { Candle, GameState, Interval } from '../game/types';
  *    그래서 전체 구간과 자산 계산은 반드시 서버가 소유한다.
  *    클라이언트가 보내온 점수는 절대 믿지 않는다.
  *
- * 지금은 프로세스 메모리다. 개발 중 HMR이나 재시작이면 날아가고,
- * 서버리스로 배포하면 인스턴스마다 따로 논다.
- * 데일리 리더보드를 붙이는 시점에 Vercel KV 로 옮길 것.
+ * 저장은 kv.ts 를 거친다 — 서버리스에서는 요청마다 인스턴스가 달라질 수 있어서
+ * 프로세스 메모리에 두면 방금 만든 세션을 다음 요청이 못 찾는다.
  */
 
 export type SessionRecord = {
@@ -33,24 +33,17 @@ export type SessionRecord = {
   createdAt: number;
 };
 
-const TTL_MS = 2 * 60 * 60 * 1000;
+/** 한 판은 길어야 몇 분이다. 2시간이면 넉넉하고, 버려진 세션은 알아서 사라진다 */
+const TTL_SEC = 2 * 60 * 60;
 
-/** globalThis 에 두는 이유는 share.ts 주석 참조 (HMR · 번들 분리) */
-const g = globalThis as typeof globalThis & { __sessions?: Map<string, SessionRecord> };
-const sessions: Map<string, SessionRecord> = (g.__sessions ??= new Map());
+const key = (id: string) => `sess:${id}`;
 
-function sweep() {
-  const cutoff = Date.now() - TTL_MS;
-  for (const [id, s] of sessions) if (s.createdAt < cutoff) sessions.delete(id);
+export async function putSession(rec: SessionRecord): Promise<void> {
+  await setJSON(key(rec.id), rec, TTL_SEC);
 }
 
-export function putSession(rec: SessionRecord): void {
-  sweep();
-  sessions.set(rec.id, rec);
-}
-
-export function getSession(id: string): SessionRecord | undefined {
-  return sessions.get(id);
+export async function getSession(id: string): Promise<SessionRecord | null> {
+  return getJSON<SessionRecord>(key(id));
 }
 
 export function newSessionId(): string {

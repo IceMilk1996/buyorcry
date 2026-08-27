@@ -17,7 +17,6 @@ export type BoardRow = {
 };
 
 export type Standing = {
-  entryId: string;
   place: number;
   total: number;
   percentile: number;

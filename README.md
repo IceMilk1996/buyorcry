@@ -33,6 +33,7 @@ python scripts/fetch_data.py --limit 200 --start 2015-01-01
 ```
 
 `data/series/*.json` 이 생기면 `npm run simulate` 이 자동으로 실데이터를 씁니다.
+파일은 종목당 하나(일봉만)이고, 주봉은 앱이 읽을 때 만듭니다.
 
 수집 후 **인접봉 40% 초과 변동 목록**이 출력됩니다. 건수가 많으면 수정주가가
 아닐 가능성이 있으니 확인하세요. (액면분할 미조정 = 가짜 폭락, 기획서 6.2)
@@ -48,9 +49,26 @@ src/lib/game/
   sample.ts       합성 캔들 생성기 (실데이터 전 검증용)
 tools/
   simulate.ts     필터 통과율 · 난이도 분포 · 전략별 알파 분포
+  series.ts       캔들 파일(컬럼 포맷) 로더 + 일봉 -> 주봉 변환
+  data.ts         파일 인덱스 · LRU 캐시 · 문제 뽑기
+  kv.ts           저장소 (Upstash Redis REST / 없으면 메모리)
+  store.ts        진행 중인 판
+  share.ts        공유 결과 — 스포일러 규칙이 이 파일에 있다
+  daily.ts        오늘의 챌린지 순위표
+  auth.ts         카카오 로그인 (동의항목 0개)
 scripts/
-  fetch_data.py   코스피200 일봉·주봉 수집 + 수정주가 검증
+  fetch_data.py   코스피200 일봉 수집 + 수정주가 검증
 ```
+
+## 환경변수
+
+`.env.example` 을 `.env.local` 로 복사해서 채웁니다. 자세한 설명은 그 파일에.
+
+| 이름 | 없으면 |
+|---|---|
+| `AUTH_SECRET` | 개발용 고정 키로 동작 (운영에서는 반드시 설정) |
+| `KAKAO_CLIENT_ID` / `KAKAO_REDIRECT_URI` | 카카오 로그인 버튼이 숨고, 개발 환경에서만 임시 로그인이 열림 |
+| `UPSTASH_REDIS_REST_URL` / `_TOKEN` | 프로세스 메모리로 동작 — 로컬은 괜찮지만 **배포에서는 세션·순위표·공유링크가 깨진다** |
 
 ### 설계 원칙 (깨면 안 되는 것)
 

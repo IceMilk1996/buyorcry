@@ -24,8 +24,8 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: '잘못된 요청입니다.' }, { status: 400 });
   }
 
-  setNick(user.id, clean);
-  const standing = setDailyNick(date, user.id, clean);
+  await setNick(user.id, clean);
+  const standing = await setDailyNick(date, user.id, clean);
   if (!standing) return NextResponse.json({ error: '기록을 찾을 수 없어요.' }, { status: 404 });
 
   return NextResponse.json({ standing });

@@ -11,7 +11,7 @@ export const contentType = 'image/png';
 /** 카톡·슬랙에 링크를 붙이면 뜨는 미리보기 카드 */
 export default async function OgImage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const rec = getShare(id);
+  const rec = await getShare(id);
   const origin = originFromHeaders(await headers());
 
   return new ImageResponse(
