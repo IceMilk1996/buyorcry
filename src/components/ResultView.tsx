@@ -76,15 +76,15 @@ export function ResultView({
     const v = nick.trim();
     if (!v || !standing || !date) return;
     try {
-      const res = await fetch('/api/daily/nick', {
+      const res = await fetch('/api/me/nick', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ date, nick: v }),
+        body: JSON.stringify({ nick: v }),
       });
       const data = await res.json();
       if (res.ok) {
         setHasNick(true);
-        setStanding(data.standing);
+        if (data.standing) setStanding(data.standing);
       }
     } catch {
       /* 실패하면 익명으로 남는다 */

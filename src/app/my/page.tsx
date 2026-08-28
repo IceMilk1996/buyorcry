@@ -3,6 +3,7 @@ import { currentUser } from '@/lib/server/auth';
 import { careerOf, type HistoryEntry } from '@/lib/server/history';
 import { TopBar } from '@/components/TopBar';
 import { SignOutButton } from '@/components/SignOutButton';
+import { NickEditor } from '@/components/NickEditor';
 
 export const dynamic = 'force-dynamic';
 
@@ -39,9 +40,14 @@ export default async function MyPage() {
     <main className="flex flex-1 flex-col px-5 pb-[max(20px,env(safe-area-inset-bottom))]">
       <TopBar title="마이페이지" />
 
+      {/* 이름을 안 정한 사람에게 '익명님' 이라고 부르지 않는다 */}
       <h1 className="mt-2 text-[24px] font-bold tracking-tight">
-        {user.nick ?? '익명'}님의 전적
+        {user.nick ? `${user.nick}님의 전적` : '내 전적'}
       </h1>
+
+      <div className="mt-4">
+        <NickEditor nick={user.nick} />
+      </div>
 
       {c.total === 0 ? (
         <div className="mt-8 flex flex-1 flex-col items-center justify-center gap-4">
@@ -58,7 +64,7 @@ export default async function MyPage() {
         </div>
       ) : (
         <>
-          <section className="mt-4 grid grid-cols-3 gap-2">
+          <section className="mt-2 grid grid-cols-3 gap-2">
             <Stat top={`${c.total}판`} bottom={`오늘의 챌린지 ${c.daily}`} />
             <Stat top={pct(c.avgAlpha)} bottom="평균 초과수익" tone={c.avgAlpha} />
             <Stat top={`${c.beatHold}판`} bottom="존버 이김" />
