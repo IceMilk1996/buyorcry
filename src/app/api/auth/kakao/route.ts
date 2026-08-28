@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { kakaoConfigured } from '@/lib/server/auth';
+import { kakaoClientId, kakaoConfigured, kakaoRedirectUri } from '@/lib/server/auth';
 
 export const dynamic = 'force-dynamic';
 
@@ -18,8 +18,8 @@ export async function GET() {
   }
 
   const url = new URL('https://kauth.kakao.com/oauth/authorize');
-  url.searchParams.set('client_id', process.env.KAKAO_CLIENT_ID!);
-  url.searchParams.set('redirect_uri', process.env.KAKAO_REDIRECT_URI!);
+  url.searchParams.set('client_id', kakaoClientId());
+  url.searchParams.set('redirect_uri', kakaoRedirectUri());
   url.searchParams.set('response_type', 'code');
 
   return NextResponse.redirect(url.toString());

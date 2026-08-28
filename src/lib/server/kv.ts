@@ -13,10 +13,17 @@
  * 필요한 연산이 7개뿐이라 명령어를 그대로 노출하지 않고 이만큼만 감쌌다.
  */
 
-const URL_ =
-  process.env.UPSTASH_REDIS_REST_URL ?? process.env.KV_REST_API_URL ?? '';
-const TOKEN =
-  process.env.UPSTASH_REDIS_REST_TOKEN ?? process.env.KV_REST_API_TOKEN ?? '';
+// trim 하는 이유는 auth.ts 의 env() 주석 참조 — 붙여넣기로 딸려온 공백에 당한 적이 있다
+const URL_ = (
+  process.env.UPSTASH_REDIS_REST_URL ??
+  process.env.KV_REST_API_URL ??
+  ''
+).trim();
+const TOKEN = (
+  process.env.UPSTASH_REDIS_REST_TOKEN ??
+  process.env.KV_REST_API_TOKEN ??
+  ''
+).trim();
 
 export function kvRemote(): boolean {
   return Boolean(URL_ && TOKEN);

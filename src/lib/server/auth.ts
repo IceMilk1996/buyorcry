@@ -27,7 +27,7 @@ const key = (id: string) => `user:${id}`;
  * 그 사람 행세를 할 수 있다 — 로그인을 붙이는 의미가 사라진다.
  */
 function secret(): string {
-  return process.env.AUTH_SECRET ?? 'dev-only-insecure-secret';
+  return env('AUTH_SECRET') || 'dev-only-insecure-secret';
 }
 
 function sign(id: string): string {
@@ -91,9 +91,33 @@ export async function setNick(id: string, nick: string): Promise<User | null> {
   return next;
 }
 
+/**
+ * 환경변수는 반드시 이걸로 읽는다.
+ *
+ * 대시보드에 값을 붙여넣을 때 앞뒤 공백이 딸려 들어가는 일이 흔하다. 실제로
+ * KAKAO_REDIRECT_URI 앞에 공백 3칸이 붙어서, 카카오가 "등록되지 않은
+ * 리다이렉트 URI"로 막았다. 값은 화면에 멀쩡해 보이고 저장한 뒤에는 확인할
+ * 방법도 없어서(Secret 타입), 원인을 찾는 데 한참 걸렸다.
+ */
+function env(name: string): string {
+  return (process.env[name] ?? '').trim();
+}
+
+export function kakaoClientId(): string {
+  return env('KAKAO_CLIENT_ID');
+}
+
+export function kakaoRedirectUri(): string {
+  return env('KAKAO_REDIRECT_URI');
+}
+
+export function kakaoClientSecret(): string {
+  return env('KAKAO_CLIENT_SECRET');
+}
+
 /** 카카오 앱 등록이 끝났는지 */
 export function kakaoConfigured(): boolean {
-  return Boolean(process.env.KAKAO_CLIENT_ID && process.env.KAKAO_REDIRECT_URI);
+  return Boolean(kakaoClientId() && kakaoRedirectUri());
 }
 
 /**

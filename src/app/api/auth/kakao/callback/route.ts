@@ -1,5 +1,11 @@
 import { NextResponse } from 'next/server';
-import { kakaoConfigured, signIn } from '@/lib/server/auth';
+import {
+  kakaoClientId,
+  kakaoClientSecret,
+  kakaoConfigured,
+  kakaoRedirectUri,
+  signIn,
+} from '@/lib/server/auth';
 
 export const dynamic = 'force-dynamic';
 
@@ -16,12 +22,10 @@ export async function GET(req: Request) {
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: new URLSearchParams({
         grant_type: 'authorization_code',
-        client_id: process.env.KAKAO_CLIENT_ID!,
-        redirect_uri: process.env.KAKAO_REDIRECT_URI!,
+        client_id: kakaoClientId(),
+        redirect_uri: kakaoRedirectUri(),
         code,
-        ...(process.env.KAKAO_CLIENT_SECRET
-          ? { client_secret: process.env.KAKAO_CLIENT_SECRET }
-          : {}),
+        ...(kakaoClientSecret() ? { client_secret: kakaoClientSecret() } : {}),
       }),
     }).then((r) => r.json());
 
