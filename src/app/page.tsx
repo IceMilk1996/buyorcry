@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { Mascot } from '@/components/Mascot';
 import { ModeChoice } from '@/components/ModeChoice';
 import { TopBar } from '@/components/TopBar';
@@ -63,6 +64,18 @@ export default function Home() {
         <p className="mt-3.5 border-t border-line pt-3 text-[13px] text-ink3">
           끝나면 어느 종목의 언제였는지 알려드려요.
         </p>
+        {/*
+          규칙(무슨 게임인가)과 화면 설명(어디를 봐야 하나)은 성격이 달라서
+          카드를 나누지 않고 여기서 링크로만 잇는다. 홈에서 설명을 두 뭉치로
+          쌓으면 시작 버튼이 그만큼 밑으로 밀린다.
+        */}
+        <Link
+          href="/how"
+          className="pressable -mx-2 mt-1.5 flex items-center justify-between rounded-xl px-2 py-2"
+        >
+          <span className="text-[13px] font-semibold text-brand">게임 화면 보는 법</span>
+          <span className="text-[13px] font-bold text-brand">→</span>
+        </Link>
       </section>
 
       <div className="flex-1" />
