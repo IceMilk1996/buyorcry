@@ -25,6 +25,8 @@ export function ModeChoice() {
   const [me, setMe] = useState<Me | null>(null);
   const [left, setLeft] = useState<number | null>(null);
   const [loginFail, setLoginFail] = useState<string | null>(null);
+  /** 비로그인 상태에서 오늘의 챌린지를 눌렀을 때 올라오는 안내 */
+  const [ask, setAsk] = useState(false);
 
   const load = useCallback(async () => {
     try {
@@ -98,22 +100,44 @@ export function ModeChoice() {
     );
   }
 
+  /*
+   * 데일리 카드는 로그인 여부와 상관없이 같은 모양으로, 늘 맨 위에 있다.
+   *
+   * 전에는 비로그인 화면에 카카오 버튼이 먼저 있고 데일리는 안내 문구로만
+   * 존재했다. 그러면 오늘의 챌린지가 있다는 걸 모른 채로 로그인을 요구받는
+   * 셈이라, 있는 줄 모르는 것을 원할 수가 없다.
+   * 카드를 먼저 보여주고, 누른 다음에 왜 로그인이 필요한지 설명한다.
+   */
+  const dailyCard = (onClick?: () => void) => {
+    const inner = (
+      <>
+        <span className="flex flex-col items-start">
+          <span className="text-[17px] font-bold">오늘의 챌린지</span>
+          <span className="mt-0.5 text-[12px] font-medium opacity-80">
+            모두 같은 차트 · 하루 한 판
+          </span>
+        </span>
+        <span className="text-[18px] font-bold opacity-70">→</span>
+      </>
+    );
+    const cls =
+      'pressable flex w-full items-center justify-between rounded-btn bg-brand px-5 py-4 text-left text-white';
+    return onClick ? (
+      <button type="button" onClick={onClick} className={cls}>
+        {inner}
+      </button>
+    ) : (
+      <Link href="/play?mode=daily" className={cls}>
+        {inner}
+      </Link>
+    );
+  };
+
   // 로그인 완료 — 시작은 사용자가 직접 누른다
   if (me.user) {
     return (
       <div className="flex flex-col gap-2">
-        <Link
-          href="/play?mode=daily"
-          className="pressable flex items-center justify-between rounded-btn bg-brand px-5 py-4 text-white"
-        >
-          <span className="flex flex-col items-start">
-            <span className="text-[17px] font-bold">오늘의 챌린지</span>
-            <span className="mt-0.5 text-[12px] font-medium opacity-80">
-              모두 같은 차트 · 하루 한 판
-            </span>
-          </span>
-          <span className="text-[18px] font-bold opacity-70">→</span>
-        </Link>
+        {dailyCard()}
         {endless}
       </div>
     );
@@ -129,38 +153,70 @@ export function ModeChoice() {
           <span className="text-[11px] text-ink3">({loginFail})</span>
         </div>
       )}
-      {me.kakaoReady ? (
-        <a
-          href="/api/auth/kakao"
-          className="pressable flex h-[58px] items-center justify-center gap-2 rounded-btn bg-[#FEE500] text-[17px] font-bold text-[#191600]"
-        >
-          <KakaoMark />
-          카카오로 시작하기
-        </a>
-      ) : me.devLogin ? (
-        <button
-          type="button"
-          onClick={async () => {
-            await fetch('/api/auth/dev', { method: 'POST' });
-            await load();
-          }}
-          className="pressable flex h-[58px] items-center justify-center rounded-btn bg-ink text-[16px] font-bold text-card"
-        >
-          임시 로그인 (개발용)
-        </button>
-      ) : (
-        <div className="rounded-btn bg-card px-5 py-4 text-center text-[13px] leading-relaxed text-ink3">
-          카카오 로그인이 아직 연결되지 않았어요
+
+      {dailyCard(() => setAsk(true))}
+      {endless}
+
+      {ask && (
+        <div className="fixed inset-0 z-50 flex justify-center" onClick={() => setAsk(false)}>
+          <div className="absolute inset-0 bg-black/35" />
+          <div
+            className="anim-rise absolute bottom-0 w-full max-w-[480px] rounded-t-card bg-card px-5 pb-[max(20px,env(safe-area-inset-bottom))] pt-3"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="mx-auto h-1 w-9 rounded-full bg-line" />
+
+            <h2 className="mt-5 text-[19px] font-bold leading-snug">
+              오늘의 챌린지는
+              <br />
+              로그인이 필요해요
+            </h2>
+            <p className="mt-2 text-[14px] leading-relaxed text-ink2">
+              모두 같은 차트를 풀고 순위를 매기거든요. 하루 한 판만 셀 수 있어야
+              해서 누구인지 알아야 해요.
+            </p>
+            <p className="mt-2 text-[13px] leading-relaxed text-ink3">
+              받아오는 정보는 <b className="font-semibold text-ink2">회원번호</b> 하나뿐이에요.
+              이름도 이메일도 받지 않아요.
+            </p>
+
+            <div className="mt-5 flex flex-col gap-2">
+              {me.kakaoReady ? (
+                <a
+                  href="/api/auth/kakao"
+                  className="pressable flex h-[58px] items-center justify-center gap-2 rounded-btn bg-[#FEE500] text-[17px] font-bold text-[#191600]"
+                >
+                  <KakaoMark />
+                  카카오로 시작하기
+                </a>
+              ) : me.devLogin ? (
+                <button
+                  type="button"
+                  onClick={async () => {
+                    await fetch('/api/auth/dev', { method: 'POST' });
+                    setAsk(false);
+                    await load();
+                  }}
+                  className="pressable flex h-[58px] items-center justify-center rounded-btn bg-ink text-[16px] font-bold text-card"
+                >
+                  임시 로그인 (개발용)
+                </button>
+              ) : (
+                <div className="rounded-btn bg-bg px-5 py-4 text-center text-[13px] leading-relaxed text-ink3">
+                  카카오 로그인이 아직 연결되지 않았어요
+                </div>
+              )}
+
+              <Link
+                href="/play?mode=endless"
+                className="pressable flex h-[52px] items-center justify-center rounded-btn bg-bg text-[15px] font-bold text-ink2"
+              >
+                로그인 없이 무한 모드로
+              </Link>
+            </div>
+          </div>
         </div>
       )}
-
-      <p className="px-1 text-center text-[12px] leading-relaxed text-ink3">
-        오늘의 챌린지는 순위가 매겨져서 로그인이 필요해요.
-        <br />
-        받아오는 정보는 회원번호뿐이에요.
-      </p>
-
-      <div className="mt-1">{endless}</div>
     </div>
   );
 }
