@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { Action } from '@/lib/game/types';
 import { ActionBar } from '@/components/ActionBar';
+import { FirstTurnHint } from '@/components/FirstTurnHint';
 
 import { Bar, CandleChart } from '@/components/CandleChart';
 import { ActionTrail } from '@/components/ActionTrail';
@@ -211,6 +212,12 @@ export default function PlayPage() {
       </div>
 
       <ActionBar holding={holding} disabled={locked || phase !== 'playing'} onAction={(a) => void act(a)} />
+
+      {/*
+        차트가 다 그려진 뒤에 올린다. 이어하기로 돌아온 판(turn > 0)에는
+        띄우지 않는다 — 하던 사람한테 "처음이시죠?"는 실례다.
+      */}
+      {turn === 0 && <FirstTurnHint />}
     </div>
   );
 }
