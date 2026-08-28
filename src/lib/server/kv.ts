@@ -34,14 +34,18 @@ export function kvBackend(): 'upstash' | 'memory' {
 }
 
 /**
- * 운영에서 메모리로 떨어지면 조용히 망가진다 — 세션은 요청마다 사라지고
- * 순위표는 인스턴스마다 다른 값을 보여준다. 눈에 띄게 남긴다.
+ * 운영에서 메모리로 떨어지면 조용히 망가진다 — 서버리스는 요청마다 인스턴스가
+ * 달라질 수 있어서 세션은 사라지고, 순위표는 인스턴스마다 다른 값을 보여주고,
+ * 하루 1회 제한은 사실상 무제한이 된다. 게임은 도는 것처럼 보이면서 규칙만
+ * 없어지는 실패라, 경고로 흘려보내면 안 된다.
  */
-if (!kvRemote() && process.env.NODE_ENV === 'production') {
-  console.warn(
-    '[kv] UPSTASH_REDIS_REST_URL / _TOKEN 이 없어 메모리로 동작합니다. ' +
-      '세션·순위표·공유링크가 정상 동작하지 않습니다.'
-  );
+function assertUsable(): void {
+  if (!kvRemote() && process.env.NODE_ENV === 'production') {
+    throw new Error(
+      '[config] UPSTASH_REDIS_REST_URL / UPSTASH_REDIS_REST_TOKEN 이 없습니다. ' +
+        '메모리로 동작하면 세션·순위표·공유링크·하루 1회 제한이 모두 깨지므로 진행하지 않습니다.'
+    );
+  }
 }
 
 /* ────────────────────────── 원격 (Upstash) ────────────────────────── */
@@ -92,12 +96,14 @@ function memExp(ttlSec?: number): number {
 /* ────────────────────────── 공개 API ────────────────────────── */
 
 export async function kvGet(key: string): Promise<string | null> {
+  assertUsable();
   if (kvRemote()) return ((await send([['GET', key]]))[0] as string | null) ?? null;
   const e = memGet(key);
   return typeof e?.v === 'string' ? e.v : null;
 }
 
 export async function kvSet(key: string, val: string, ttlSec?: number): Promise<void> {
+  assertUsable();
   if (kvRemote()) {
     await send([ttlSec ? ['SET', key, val, 'EX', ttlSec] : ['SET', key, val]]);
     return;
@@ -106,6 +112,7 @@ export async function kvSet(key: string, val: string, ttlSec?: number): Promise<
 }
 
 export async function kvHGet(key: string, field: string): Promise<string | null> {
+  assertUsable();
   if (kvRemote()) return ((await send([['HGET', key, field]]))[0] as string | null) ?? null;
   const e = memGet(key);
   return e && e.v instanceof Map ? (e.v.get(field) ?? null) : null;
@@ -117,6 +124,7 @@ export async function kvHSet(
   val: string,
   ttlSec?: number
 ): Promise<void> {
+  assertUsable();
   if (kvRemote()) {
     const cmds: Cmd[] = [['HSET', key, field, val]];
     if (ttlSec) cmds.push(['EXPIRE', key, ttlSec]);
@@ -130,6 +138,7 @@ export async function kvHSet(
 }
 
 export async function kvHGetAll(key: string): Promise<Record<string, string>> {
+  assertUsable();
   if (kvRemote()) {
     const r = (await send([['HGETALL', key]]))[0];
     // Upstash 는 배열([f1,v1,f2,v2...]) 또는 객체로 준다 — 둘 다 받는다

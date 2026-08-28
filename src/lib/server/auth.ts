@@ -37,7 +37,25 @@ const key = (id: string) => `user:${id}`;
  * 그 사람 행세를 할 수 있다 — 로그인을 붙이는 의미가 사라진다.
  */
 function secret(): string {
-  return env('AUTH_SECRET') || 'dev-only-insecure-secret';
+  const s = env('AUTH_SECRET');
+  if (s) return s;
+
+  /*
+   * 운영에서는 폴백을 주지 않고 멈춘다.
+   *
+   * 폴백 상수를 쓰면 서명 키가 공개된 값이 된다. 그러면 누구나 쿠키를 만들어
+   * 임의의 회원번호로 행세할 수 있고, 매번 새 번호를 써서 오늘의 챌린지를
+   * 무제한 반복하고 순위표를 원하는 만큼 채울 수 있다. 로그인을 붙인 의미가
+   * 통째로 사라지는데, 화면상으로는 멀쩡히 돌아가서 알아채지도 못한다.
+   * 조용히 규칙만 사라지는 것보다 500 이 낫다.
+   */
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error(
+      '[config] AUTH_SECRET 이 없습니다. 쿠키 서명 키가 공개 상수가 되어 ' +
+        '누구나 남의 회원번호로 행세할 수 있으므로 진행하지 않습니다.'
+    );
+  }
+  return 'dev-only-insecure-secret';
 }
 
 function sign(id: string): string {
