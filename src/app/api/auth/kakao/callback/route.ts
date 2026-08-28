@@ -78,7 +78,12 @@ export async function GET(req: Request) {
      * 안 실리면 "로그인은 됐는데 다음 요청에서 다시 비회원" 이 되고,
      * 화면만 봐서는 토큰 실패와 구분이 안 된다. 한 줄로 막을 수 있는 일이다.
      */
-    const res = NextResponse.redirect(new URL('/play?mode=daily', req.url));
+    /*
+     * 홈으로 돌려보낸다. 바로 /play?mode=daily 로 보내면 로그인했다는 이유만으로
+     * 판이 시작되는데, 오늘의 챌린지는 하루 한 번뿐이라 그 한 번을 실수로 쓰게 된다.
+     * 시작은 사용자가 명시적으로 눌러야 한다.
+     */
+    const res = NextResponse.redirect(new URL('/', req.url));
     res.cookies.set(COOKIE, signedCookieValue(user.id), cookieOptions());
     return res;
   } catch (e) {
