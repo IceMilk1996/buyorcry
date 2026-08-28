@@ -38,8 +38,8 @@ export type BoardRow = {
 export type DailyStanding = {
   place: number;
   total: number;
-  /** 상위 몇 퍼센트인지 (1 = 최상위) */
-  percentile: number;
+  /** 상위 몇 퍼센트인지 (1 = 최상위). 참가자가 적으면 null — percentileOf 참조 */
+  percentile: number | null;
   /** 순위표 — 상위 3명 + 내 주변, 합쳐서 최대 10줄 */
   rows: BoardRow[];
   /** 등급별 인원 */
@@ -82,9 +82,14 @@ export async function setDailyNick(
 export async function standingOf(date: string, userId: string): Promise<DailyStanding> {
   const list = (await hValuesJSON<DailyEntry>(key(date))).sort((a, b) => b.alpha - a.alpha);
 
-  const idx = Math.max(0, list.findIndex((e) => e.userId === userId));
+  /*
+   * 내 기록이 없으면 -1 이다. 전에는 Math.max(0, ...) 로 0 으로 만들었는데,
+   * 그러면 남의 1등 줄에 "나" 강조가 붙고 나는 1등으로 표시된다.
+   * 오류를 감추는 대신 거짓말을 하는 형태라, 아예 순위표에서 빼는 편이 낫다.
+   */
+  const idx = list.findIndex((e) => e.userId === userId);
   const total = Math.max(1, list.length);
-  const place = idx + 1;
+  const place = idx >= 0 ? idx + 1 : total;
 
   const counts = new Map<string, number>();
   for (const e of list) counts.set(e.rank.label, (counts.get(e.rank.label) ?? 0) + 1);
@@ -92,10 +97,26 @@ export async function standingOf(date: string, userId: string): Promise<DailySta
   return {
     place,
     total,
-    percentile: Math.max(1, Math.round((place / total) * 100)),
+    percentile: percentileOf(place, total),
     rows: buildRows(list, idx),
     spread: [...counts.entries()].map(([label, count]) => ({ label, count })),
   };
+}
+
+/** 백분위를 보여줄 최소 인원 */
+const PERCENTILE_MIN = 20;
+
+/**
+ * 상위 몇 퍼센트인지. 사람이 적으면 아예 주지 않는다(null).
+ *
+ * 백분위를 쓰는 이유는 "873등" 이 아무 의미가 없어서인데(기획서 4.1),
+ * 참가자가 몇 명뿐이면 백분위 쪽이 오히려 아무 의미가 없다. 혼자 참가하면
+ * "1등 · 상위 100%" 가 되고, 몇 명이든 꼴찌는 항상 "상위 100%" 다.
+ * 그럴 땐 "3명 중 1등" 만으로 충분히 읽힌다.
+ */
+function percentileOf(place: number, total: number): number | null {
+  if (total < PERCENTILE_MIN) return null;
+  return Math.max(1, Math.ceil((place / total) * 100));
 }
 
 /**

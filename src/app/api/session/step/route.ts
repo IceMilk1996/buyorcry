@@ -5,6 +5,7 @@ import { getSession, putSession } from '@/lib/server/store';
 import { newShareId, putShare } from '@/lib/server/share';
 import { submitDaily, type DailyStanding } from '@/lib/server/daily';
 import { addHistory } from '@/lib/server/history';
+import { currentUser } from '@/lib/server/auth';
 
 export const dynamic = 'force-dynamic';
 
@@ -58,12 +59,20 @@ export async function POST(req: Request) {
     const r = finalize(s.state, play);
     shareId = newShareId();
 
+    /*
+     * 닉네임은 지금 다시 읽는다.
+     * 세션에 박제된 값을 쓰면, 판 도중에 마이페이지에서 이름을 정한 사람이
+     * 순위표에는 '익명' 으로 올라간다 — 계정에는 저장돼 있는데도.
+     * 그러면 결과 화면이 이미 정한 사람에게 이름을 또 묻는다.
+     */
+    const nick = (await currentUser())?.nick ?? s.nick;
+
     // 데일리만 순위가 성립한다 — 전원이 같은 차트를 풀기 때문
     if (s.mode === 'daily' && s.userId) {
       standing = await submitDaily(s.date, {
         shareId,
         userId: s.userId,
-        nick: s.nick,
+        nick,
         alpha: r.alpha,
         myReturn: r.myReturn,
         rank: r.rank,

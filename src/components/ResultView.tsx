@@ -20,7 +20,7 @@ export type BoardRow = {
 export type Standing = {
   place: number;
   total: number;
-  percentile: number;
+  percentile: number | null;
   rows: BoardRow[];
   spread: { label: string; count: number }[];
 };
@@ -220,9 +220,11 @@ export function ResultView({
               {standing.place.toLocaleString('ko-KR')}
             </span>
             <span className="text-[16px] font-semibold text-ink2">등</span>
-            <span className="ml-1 text-[15px] font-bold text-brand">
-              상위 {standing.percentile}%
-            </span>
+            {standing.percentile !== null && (
+              <span className="ml-1 text-[15px] font-bold text-brand">
+                상위 {standing.percentile}%
+              </span>
+            )}
           </div>
 
           {/* 순위표 — 상위 3명 + 내 주변, 합쳐서 10줄 */}

@@ -9,7 +9,7 @@ type Me = {
   kakaoReady: boolean;
   devLogin: boolean;
   today: {
-    standing: { place: number; total: number; percentile: number };
+    standing: { place: number; total: number; percentile: number | null };
     rankLabel: string;
     shareId: string | null;
   } | null;
@@ -91,8 +91,8 @@ export function ModeChoice() {
             <span className="text-[13px] font-semibold text-ink3">{me.today.rankLabel}</span>
           </div>
           <p className="mt-1.5 text-[13px] text-ink3">
-            {s.total.toLocaleString('ko-KR')}명 중 {s.place.toLocaleString('ko-KR')}등 · 상위{' '}
-            {s.percentile}%
+            {s.total.toLocaleString('ko-KR')}명 중 {s.place.toLocaleString('ko-KR')}등
+            {s.percentile !== null && ` · 상위 ${s.percentile}%`}
           </p>
           <div className="mt-3 flex items-baseline justify-between">
             <p className="text-[13px] text-ink3">
