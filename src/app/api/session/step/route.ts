@@ -4,6 +4,7 @@ import { finalize, step } from '@/lib/game/engine';
 import { getSession, putSession } from '@/lib/server/store';
 import { newShareId, putShare } from '@/lib/server/share';
 import { submitDaily, type DailyStanding } from '@/lib/server/daily';
+import { addHistory } from '@/lib/server/history';
 
 export const dynamic = 'force-dynamic';
 
@@ -66,6 +67,25 @@ export async function POST(req: Request) {
         myReturn: r.myReturn,
         rank: r.rank,
         at: Date.now(),
+      });
+    }
+
+    // 로그인한 사람의 판은 모드와 무관하게 전적에 남긴다 (마이페이지)
+    if (s.userId) {
+      await addHistory(s.userId, {
+        at: Date.now(),
+        mode: s.mode,
+        date: s.date,
+        alpha: r.alpha,
+        myReturn: r.myReturn,
+        holdReturn: r.holdReturn,
+        rankLabel: r.rank.label,
+        interval: s.interval,
+        name: s.name,
+        from: s.window[REVEAL_COUNT].t,
+        to: s.window[s.window.length - 1].t,
+        tradeCount: r.tradeCount,
+        shareId,
       });
     }
 

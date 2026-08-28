@@ -1,10 +1,12 @@
 import { Mascot } from '@/components/Mascot';
 import { ModeChoice } from '@/components/ModeChoice';
+import { TopBar } from '@/components/TopBar';
 
 export default function Home() {
   return (
-    <main className="flex flex-1 flex-col px-5 pb-[max(20px,env(safe-area-inset-bottom))] pt-10">
-      <header className="anim-rise">
+    <main className="flex flex-1 flex-col px-5 pb-[max(20px,env(safe-area-inset-bottom))]">
+      <TopBar />
+      <header className="anim-rise mt-4">
         <h1 className="text-[30px] font-bold leading-[1.25] tracking-tight">
           존버를 이길 수<br />있을까?
         </h1>

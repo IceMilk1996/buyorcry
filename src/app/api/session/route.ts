@@ -29,7 +29,12 @@ export async function POST(req: Request) {
    * 비회원으로 한 판 돌려 차트를 외운 뒤 로그인해서 다시 하면
    * 순위표가 통째로 무의미해지기 때문이다. 무한 모드는 순위가 없으므로 열어둔다.
    */
-  const user = mode === 'daily' ? await currentUser() : null;
+  /*
+   * 무한 모드도 로그인 상태면 누구인지 알아둔다 — 로그인을 요구하진 않지만,
+   * 로그인한 사람의 무한 모드 판은 마이페이지 전적에 남아야 하기 때문이다.
+   * 쿠키가 없으면 저장소를 읽지 않고 바로 null 이라 비용도 없다.
+   */
+  const user = await currentUser();
   if (mode === 'daily') {
     if (!user) {
       return NextResponse.json(
