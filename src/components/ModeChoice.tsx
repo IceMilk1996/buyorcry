@@ -6,7 +6,7 @@ import { formatCountdown, secondsUntilTomorrow } from '@/lib/client/daily';
 
 type Me = {
   user: { id: string; nick: string | null } | null;
-  kakaoReady: boolean;
+  loginReady: boolean;
   devLogin: boolean;
   today: {
     standing: { place: number; total: number; percentile: number | null };
@@ -31,7 +31,7 @@ export function ModeChoice() {
 
   /*
    * 못 불러온 것과 '카카오가 아직 연결 안 됨' 은 다른 상태다.
-   * 예전에는 실패해도 kakaoReady:false 로 덮어써서, 네트워크가 끊겼을 뿐인데
+   * 예전에는 실패해도 loginReady:false 로 덮어써서, 네트워크가 끊겼을 뿐인데
    * "카카오 로그인이 아직 연결되지 않았어요" 라는 엉뚱한 진단이 떴다.
    */
   const [loadFailed, setLoadFailed] = useState(false);
@@ -43,7 +43,7 @@ export function ModeChoice() {
       setMe(await res.json());
       setLoadFailed(false);
     } catch {
-      setMe({ user: null, kakaoReady: false, devLogin: false, today: null });
+      setMe({ user: null, loginReady: false, devLogin: false, today: null });
       setLoadFailed(true);
     }
   }, []);
@@ -203,7 +203,7 @@ export function ModeChoice() {
             </p>
 
             <div className="mt-5 flex flex-col gap-2">
-              {me.kakaoReady ? (
+              {me.loginReady ? (
                 <a
                   href="/api/auth/kakao"
                   className="pressable flex h-[58px] items-center justify-center gap-2 rounded-btn bg-[#FEE500] text-[17px] font-bold text-[#191600]"

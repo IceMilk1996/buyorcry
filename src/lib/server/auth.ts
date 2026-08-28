@@ -151,6 +151,28 @@ export function kakaoConfigured(): boolean {
 }
 
 /**
+ * 로그인을 막고 있는 환경변수 이름들. 비어 있으면 로그인이 된다.
+ *
+ * 카카오 키만 보면 안 된다. AUTH_SECRET 이 없으면 카카오는 멀쩡히 다녀오고
+ * 마지막 쿠키 서명에서 죽는다 — 사용자는 카카오 로그인까지 다 마친 뒤에야
+ * "로그인을 마치지 못했어요" 를 보고, 화면에는 카카오 문제처럼 보인다.
+ * 실제로 이것 때문에 한참 엉뚱한 데를 팠다. 문 앞에서 먼저 막는다.
+ */
+export function loginBlockers(): string[] {
+  const missing: string[] = [];
+  if (!kakaoClientId()) missing.push('KAKAO_CLIENT_ID');
+  if (!kakaoRedirectUri()) missing.push('KAKAO_REDIRECT_URI');
+  // 개발에서는 폴백 키가 있어서 없어도 로그인이 된다
+  if (process.env.NODE_ENV === 'production' && !env('AUTH_SECRET')) missing.push('AUTH_SECRET');
+  return missing;
+}
+
+/** 지금 로그인을 시도해도 되는 상태인지 */
+export function loginReady(): boolean {
+  return loginBlockers().length === 0;
+}
+
+/**
  * 카카오 앱 등록 전에도 화면과 순위표를 만져볼 수 있어야 해서 둔 문. 
  * 운영에서는 절대 열리지 않는다.
  */

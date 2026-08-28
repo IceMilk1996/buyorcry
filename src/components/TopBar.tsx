@@ -12,7 +12,7 @@ import Link from 'next/link';
 export function TopBar({ title, back }: { title?: string; back?: boolean }) {
   const [open, setOpen] = useState(false);
   const [user, setUser] = useState<{ id: string } | null>(null);
-  const [kakaoReady, setKakaoReady] = useState(false);
+  const [loginReady, setLoginReady] = useState(false);
   /** 못 불러온 것과 '아직 연결 안 됨' 을 구분한다 (ModeChoice 와 같은 이유) */
   const [loadFailed, setLoadFailed] = useState(false);
 
@@ -29,7 +29,7 @@ export function TopBar({ title, back }: { title?: string; back?: boolean }) {
         if (!res.ok) throw new Error(String(res.status));
         const me = await res.json();
         setUser(me.user);
-        setKakaoReady(Boolean(me.kakaoReady));
+        setLoginReady(Boolean(me.loginReady));
         setLoadFailed(false);
       } catch {
         setLoadFailed(true);
@@ -100,7 +100,7 @@ export function TopBar({ title, back }: { title?: string; back?: boolean }) {
                 <Item href="/my" onClick={() => setOpen(false)}>
                   마이페이지
                 </Item>
-              ) : kakaoReady ? (
+              ) : loginReady ? (
                 <Item href="/api/auth/kakao">카카오로 로그인</Item>
               ) : (
                 <p className="border-b border-line py-5 text-[14px] text-ink3">

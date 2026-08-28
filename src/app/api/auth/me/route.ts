@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { currentUser, devLoginAllowed, kakaoConfigured } from '@/lib/server/auth';
+import { currentUser, devLoginAllowed, loginReady } from '@/lib/server/auth';
 import { findTodayEntry, standingOf } from '@/lib/server/daily';
 import { todayKST } from '@/lib/server/data';
 
@@ -14,7 +14,8 @@ export async function GET() {
   return NextResponse.json(
     {
       user: user ? { id: user.id, nick: user.nick } : null,
-      kakaoReady: kakaoConfigured(),
+      // 카카오 키뿐 아니라 AUTH_SECRET 까지 있어야 실제로 로그인이 된다
+      loginReady: loginReady(),
       devLogin: devLoginAllowed(),
       // 오늘 이미 했으면 홈에서 결과를 보여준다 (기기가 바뀌어도 유지된다)
       today:

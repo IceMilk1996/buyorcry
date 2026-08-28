@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import {
   kakaoClientId,
   kakaoClientSecret,
-  kakaoConfigured,
+  loginBlockers,
   kakaoRedirectUri,
   signIn,
   signedCookieValue,
@@ -31,7 +31,8 @@ export async function GET(req: Request) {
   // 사용자가 동의를 취소하면 code 대신 error 가 온다
   const denied = url.searchParams.get('error');
   if (denied) return fail(req, 'denied', denied);
-  if (!kakaoConfigured()) return fail(req, 'not-configured');
+  const blockers = loginBlockers();
+  if (blockers.length > 0) return fail(req, 'not-configured', blockers.join(', '));
   if (!code) return fail(req, 'no-code');
 
   let token: { access_token?: string; error?: string; error_description?: string };
