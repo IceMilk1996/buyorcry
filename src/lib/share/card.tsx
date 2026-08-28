@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import { BEAK, BODY, EYE, EYE_SQUINT, MOUTH } from '@/components/kkeolmusae';
 import path from 'node:path';
 import { Action } from '../game/types';
 
@@ -74,7 +75,8 @@ export function ShareCard({ alpha, rankLabel, actions, width, height, origin, va
     ? Math.min(width / 1200, height / 700)
     : Math.min(width / 900, height / 860);
   const s = (n: number) => Math.round(n * scale);
-  const domain = origin.replace(/^https?:\/\//, '');
+  const domain = origin;
+  const surface = win ? '#fff5f6' : '#f2f7ff';
 
   return (
     <div
@@ -87,12 +89,12 @@ export function ShareCard({ alpha, rankLabel, actions, width, height, origin, va
         justifyContent: 'center',
         gap: s(wide ? 70 : 24),
         padding: s(56),
-        background: win ? '#fff5f6' : '#f2f7ff',
+        background: surface,
         fontFamily: 'KR',
         fontWeight: 700,
       }}
     >
-      <Mascot color={accent} happy={win} size={s(wide ? 260 : 200)} />
+      <Mascot color={accent} happy={win} size={s(wide ? 260 : 200)} bg={surface} />
 
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: wide ? 'flex-start' : 'center' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: s(10) }}>
@@ -100,7 +102,7 @@ export function ShareCard({ alpha, rankLabel, actions, width, height, origin, va
             satori 는 mask 를 못 그린다. 구멍을 뚫는 대신 배경색으로 칠한 판을 쓴다.
             (Logo.tsx 의 LogoPainted 와 같은 도형)
           */}
-          <Bird size={s(34)} color={accent} hole={win ? '#fff5f6' : '#f2f7ff'} />
+          <Bird size={s(34)} color={accent} hole={surface} />
           <div style={{ display: 'flex', fontSize: s(26), fontWeight: 700, color: INK3, letterSpacing: s(1) }}>
             살껄팔껄
           </div>
@@ -173,60 +175,34 @@ export function ShareCard({ alpha, rankLabel, actions, width, height, origin, va
   );
 }
 
-/** 봉이 — satori가 SVG를 완전히 지원하지 않아 div로 그린다 */
-function Mascot({ color, happy, size }: { color: string; happy: boolean; size: number }) {
-  const w = size;
-  const h = Math.round(size * 1.25);
-  const bodyW = Math.round(w * 0.62);
-  const bodyH = Math.round(h * 0.5);
-  const eye = Math.round(w * 0.075);
-
+/**
+ * 껄무새 — 공유 이미지용.
+ *
+ * satori 는 mask 를 못 그린다. 구멍을 뚫는 대신 배경색으로 칠한다.
+ * 도형은 앱과 같은 좌표를 쓴다(kkeolmusae.ts).
+ */
+function Mascot({
+  color,
+  happy,
+  size,
+  bg,
+}: {
+  color: string;
+  happy: boolean;
+  size: number;
+  bg: string;
+}) {
   return (
-    <div style={{ display: 'flex', position: 'relative', width: w, height: h }}>
-      {/* 심지 */}
-      <div
-        style={{
-          position: 'absolute',
-          left: Math.round(w / 2 - w * 0.045),
-          top: 0,
-          width: Math.round(w * 0.09),
-          height: h,
-          borderRadius: w,
-          background: color,
-          opacity: 0.9,
-        }}
-      />
-      {/* 몸통 */}
-      <div
-        style={{
-          position: 'absolute',
-          left: Math.round((w - bodyW) / 2),
-          top: Math.round(h * 0.26),
-          width: bodyW,
-          height: bodyH,
-          borderRadius: Math.round(bodyW * 0.33),
-          background: color,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: Math.round(h * 0.035),
-        }}
-      >
-        <div style={{ display: 'flex', gap: Math.round(bodyW * 0.28) }}>
-          <div style={{ width: eye, height: Math.round(eye * (happy ? 0.45 : 1.2)), borderRadius: eye, background: '#fff' }} />
-          <div style={{ width: eye, height: Math.round(eye * (happy ? 0.45 : 1.2)), borderRadius: eye, background: '#fff' }} />
-        </div>
-        <div
-          style={{
-            width: Math.round(bodyW * (happy ? 0.3 : 0.26)),
-            height: Math.round(eye * (happy ? 0.75 : 0.32)),
-            borderRadius: eye,
-            background: '#fff',
-          }}
-        />
-      </div>
-    </div>
+    <svg width={size} height={size} viewBox="0 0 96 96">
+      <rect x={BODY.x} y={BODY.y} width={BODY.w} height={BODY.h} rx={BODY.r} fill={color} />
+      <path d={BEAK} fill={color} />
+      <path d={happy ? MOUTH.wide : MOUTH.small} fill={bg} />
+      {happy ? (
+        <path d={EYE_SQUINT} stroke={bg} strokeWidth="4.4" strokeLinecap="round" fill="none" />
+      ) : (
+        <circle cx={EYE.cx} cy={EYE.cy} r={EYE.r} fill={bg} />
+      )}
+    </svg>
   );
 }
 

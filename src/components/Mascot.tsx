@@ -1,18 +1,25 @@
+import { BEAK, BODY, EYE, EYE_SQUINT, MOUTH } from './kkeolmusae';
+
 export type Mood = 'happy' | 'neutral' | 'worried' | 'party' | 'shock';
 export type Tone = 'up' | 'down' | 'flat';
 
-const BODY: Record<Tone, string> = {
+const BODY_COLOR: Record<Tone, string> = {
   up: 'var(--color-up)',
   down: 'var(--color-down)',
   flat: '#b0b8c1',
 };
 
 /**
- * 봉이 — 이 게임의 귀여움 담당.
+ * 껄무새 — 이 게임의 캐릭터.
  *
- * 캔들 하나를 캐릭터로 만든 것. 심지가 머리·다리가 되고 몸통이 얼굴이다.
- * 수익 중이면 빨강, 손실이면 파랑으로 몸 색이 바뀌어서
- * 숫자를 읽지 않아도 지금 상태가 보인다.
+ * "살껄, 팔껄" 하고 되뇌는 개미가 곧 껄무새다. 로고와 같은 실루엣을 쓰고
+ * (kkeolmusae.ts) 표정만 바꾼다. 실루엣이 흔들리면 같은 캐릭터로 안 읽힌다.
+ *
+ * 표정은 **입을 벌린 정도**로 만든다. 눈은 거들 뿐이다 —
+ * 실루엣 아이콘이라 쓸 수 있는 게 구멍뿐이고, 그중 크기를 크게 바꿀 수 있는
+ * 건 입밖에 없다.
+ *
+ * 몸 색은 수익 중이면 빨강, 손실이면 파랑. 숫자를 읽지 않아도 상태가 보인다.
  */
 export function Mascot({
   mood = 'neutral',
@@ -25,99 +32,69 @@ export function Mascot({
   size?: number;
   className?: string;
 }) {
-  const body = BODY[tone];
+  const color = BODY_COLOR[tone];
+  const mouth =
+    mood === 'party' || mood === 'shock'
+      ? MOUTH.wide
+      : mood === 'happy'
+        ? MOUTH.open
+        : mood === 'worried'
+          ? MOUTH.small
+          : MOUTH.shut;
+  const squint = mood === 'happy' || mood === 'party';
+  const id = `kkeolmusae-${mood}`;
 
   return (
-    <svg
-      width={size}
-      height={size * 1.25}
-      viewBox="0 0 80 100"
-      fill="none"
-      className={className}
-      aria-hidden
-    >
-      {/* 심지 */}
-      <rect x="36.5" y="4" width="7" height="92" rx="3.5" fill={body} opacity="0.9" />
-      {/* 몸통 */}
-      <rect x="16" y="26" width="48" height="50" rx="16" fill={body} />
-      {/* 하이라이트 — 입체감 한 스푼 */}
-      <rect x="16" y="26" width="48" height="24" rx="14" fill="#fff" opacity="0.14" />
+    <svg width={size} height={size} viewBox="0 0 96 96" className={className} aria-hidden>
+      <defs>
+        <mask id={id}>
+          <rect width="96" height="96" fill="#fff" />
+          <path d={mouth} fill="#000" />
+          {squint ? (
+            <path
+              d={EYE_SQUINT}
+              stroke="#000"
+              strokeWidth="4.4"
+              strokeLinecap="round"
+              fill="none"
+            />
+          ) : mood === 'shock' ? (
+            <g stroke="#000" strokeWidth="4" strokeLinecap="round">
+              <path d={`M${EYE.cx - 5} ${EYE.cy - 5} L${EYE.cx + 5} ${EYE.cy + 5}`} />
+              <path d={`M${EYE.cx + 5} ${EYE.cy - 5} L${EYE.cx - 5} ${EYE.cy + 5}`} />
+            </g>
+          ) : (
+            <circle cx={EYE.cx} cy={EYE.cy} r={EYE.r} fill="#000" />
+          )}
+        </mask>
+      </defs>
 
-      {mood === 'shock' ? (
-        <>
-          <Cross x={30} y={46} />
-          <Cross x={50} y={46} />
-        </>
-      ) : (
-        <>
-          <Eye x={30} y={46} squint={mood === 'happy' || mood === 'party'} />
-          <Eye x={50} y={46} squint={mood === 'happy' || mood === 'party'} />
-        </>
-      )}
+      <g mask={`url(#${id})`}>
+        <rect x={BODY.x} y={BODY.y} width={BODY.w} height={BODY.h} rx={BODY.r} fill={color} />
+        <path d={BEAK} fill={color} />
+      </g>
 
-      {/* 볼터치 */}
-      {(mood === 'happy' || mood === 'party') && (
-        <>
-          <ellipse cx="23" cy="57" rx="5" ry="3.4" fill="#fff" opacity="0.35" />
-          <ellipse cx="57" cy="57" rx="5" ry="3.4" fill="#fff" opacity="0.35" />
-        </>
-      )}
-
-      {/* 입 */}
-      {mood === 'happy' && <Mouth d="M33 60 Q40 67 47 60" />}
-      {mood === 'party' && <ellipse cx="40" cy="62" rx="6" ry="7" fill="#fff" opacity="0.92" />}
-      {mood === 'neutral' && <Mouth d="M34 62 L46 62" />}
-      {mood === 'worried' && <Mouth d="M33 65 Q40 58 47 65" />}
-      {mood === 'shock' && <ellipse cx="40" cy="63" rx="5" ry="6" fill="#fff" opacity="0.9" />}
-
-      {/* 식은땀 */}
+      {/* 식은땀 — 실루엣 밖이라 마스크를 안 탄다 */}
       {mood === 'worried' && (
-        <path d="M62 36 q4 6 0 9 q-4 -3 0 -9z" fill="#8ec9ff" opacity="0.95" />
+        <path d="M88 28 q4 6 0 9 q-4-3 0-9z" fill="#8ec9ff" />
       )}
 
-      {/* 파티 반짝이 */}
+      {/* 반짝이 */}
       {mood === 'party' && (
         <>
-          <Sparkle x={11} y={20} />
-          <Sparkle x={66} y={30} />
-          <Sparkle x={60} y={12} />
+          <Sparkle x={16} y={22} />
+          <Sparkle x={88} y={30} />
+          <Sparkle x={76} y={10} />
         </>
       )}
     </svg>
   );
 }
 
-function Eye({ x, y, squint }: { x: number; y: number; squint: boolean }) {
-  return squint ? (
-    <path
-      d={`M${x - 5} ${y + 2} Q${x} ${y - 4} ${x + 5} ${y + 2}`}
-      stroke="#fff"
-      strokeWidth="3.2"
-      strokeLinecap="round"
-      fill="none"
-    />
-  ) : (
-    <ellipse cx={x} cy={y} rx="3.6" ry="4.4" fill="#fff" />
-  );
-}
-
-function Cross({ x, y }: { x: number; y: number }) {
-  return (
-    <g stroke="#fff" strokeWidth="3" strokeLinecap="round">
-      <path d={`M${x - 4} ${y - 4} L${x + 4} ${y + 4}`} />
-      <path d={`M${x + 4} ${y - 4} L${x - 4} ${y + 4}`} />
-    </g>
-  );
-}
-
-function Mouth({ d }: { d: string }) {
-  return <path d={d} stroke="#fff" strokeWidth="3" strokeLinecap="round" fill="none" />;
-}
-
 function Sparkle({ x, y }: { x: number; y: number }) {
   return (
     <path
-      d={`M${x} ${y - 5} L${x + 1.6} ${y - 1.6} L${x + 5} ${y} L${x + 1.6} ${y + 1.6} L${x} ${y + 5} L${x - 1.6} ${y + 1.6} L${x - 5} ${y} L${x - 1.6} ${y - 1.6} Z`}
+      d={`M${x} ${y - 6} L${x + 2} ${y - 2} L${x + 6} ${y} L${x + 2} ${y + 2} L${x} ${y + 6} L${x - 2} ${y + 2} L${x - 6} ${y} L${x - 2} ${y - 2} Z`}
       fill="var(--color-butter)"
     />
   );
