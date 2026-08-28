@@ -1,4 +1,4 @@
-import { BEAK, BODY, EYE, EYE_SQUINT, MOUTH } from './kkeolmusae';
+import { BEAK, BODY, drop, EYE, EYE_SAD, EYE_SQUINT, MOUTH } from './kkeolmusae';
 
 export type Mood = 'happy' | 'neutral' | 'worried' | 'party' | 'shock';
 export type Tone = 'up' | 'down' | 'flat';
@@ -51,18 +51,13 @@ export function Mascot({
           <rect width="96" height="96" fill="#fff" />
           <path d={mouth} fill="#000" />
           {squint ? (
-            <path
-              d={EYE_SQUINT}
-              stroke="#000"
-              strokeWidth="4.4"
-              strokeLinecap="round"
-              fill="none"
-            />
+            <path d={EYE_SQUINT} stroke="#000" strokeWidth="4.4" strokeLinecap="round" fill="none" />
+          ) : mood === 'worried' ? (
+            // 우는 눈 — 웃는 눈을 아래로 뒤집은 것뿐인데 정반대로 읽힌다
+            <path d={EYE_SAD} stroke="#000" strokeWidth="4.4" strokeLinecap="round" fill="none" />
           ) : mood === 'shock' ? (
-            <g stroke="#000" strokeWidth="4" strokeLinecap="round">
-              <path d={`M${EYE.cx - 5} ${EYE.cy - 5} L${EYE.cx + 5} ${EYE.cy + 5}`} />
-              <path d={`M${EYE.cx + 5} ${EYE.cy - 5} L${EYE.cx - 5} ${EYE.cy + 5}`} />
-            </g>
+            // 절규 — 눈을 크게 뚫고 안에 작은 눈동자를 남긴다. X 눈은 기절이지 절규가 아니다
+            <circle cx={EYE.cx} cy={EYE.cy} r="10" fill="#000" />
           ) : (
             <circle cx={EYE.cx} cy={EYE.cy} r={EYE.r} fill="#000" />
           )}
@@ -74,9 +69,26 @@ export function Mascot({
         <path d={BEAK} fill={color} />
       </g>
 
-      {/* 식은땀 — 실루엣 밖이라 마스크를 안 탄다 */}
+      {/* 절규 — 크게 뚫은 눈 안에 작은 눈동자, 그리고 머리 둘레의 떨림선 */}
+      {mood === 'shock' && (
+        <>
+          <circle cx={EYE.cx + 1} cy={EYE.cy + 1} r="3" fill={color} />
+          <g stroke={color} strokeWidth="3.6" strokeLinecap="round" opacity="0.85">
+            <path d="M85 20 L92 13" />
+            <path d="M88 33 L96 31" />
+            <path d="M74 11 L76 3" />
+            <path d="M22 26 L16 20" />
+            <path d="M33 14 L31 6" />
+          </g>
+        </>
+      )}
+
+      {/* 눈물 — 실루엣 밖이라 마스크를 안 탄다 */}
       {mood === 'worried' && (
-        <path d="M88 28 q4 6 0 9 q-4-3 0-9z" fill="#8ec9ff" />
+        <g fill="#8ec9ff">
+          <path d={drop(56, 44)} />
+          <path d={drop(62, 56)} />
+        </g>
       )}
 
       {/* 반짝이 */}
