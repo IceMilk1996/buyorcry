@@ -14,6 +14,14 @@ const nextConfig: NextConfig = {
    */
   outputFileTracingIncludes: {
     '/api/session': ['./data/series/**'],
+    /*
+     * 공유 이미지의 한글 폰트. card.tsx 가 process.cwd() 기준으로 읽고 어디에서도
+     * import 하지 않는다. 확인해보니 경로 조각이 전부 리터럴이라 지금은 추적이
+     * 알아서 찾아내지만(설정 없이 빌드해도 들어간다), 캔들 데이터와 같은 이유로
+     * 못 박아 둔다 — 빠지면 카톡 링크 미리보기와 '이미지 저장' 이 배포에서만 죽는다.
+     */
+    '/r/[id]/opengraph-image': ['./src/assets/**'],
+    '/api/share/[id]/image': ['./src/assets/**'],
   },
 };
 
