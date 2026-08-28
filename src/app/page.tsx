@@ -1,13 +1,17 @@
 import { Mascot } from '@/components/Mascot';
 import { ModeChoice } from '@/components/ModeChoice';
 import { TopBar } from '@/components/TopBar';
+import { Logo } from '@/components/Logo';
 
 export default function Home() {
   return (
     <main className="flex flex-1 flex-col px-5 pb-[max(20px,env(safe-area-inset-bottom))]">
       <TopBar />
       <header className="anim-rise mt-4">
-        <h1 className="text-[38px] font-bold leading-[1.15] tracking-tight">살껄팔껄!</h1>
+        <div className="flex items-center gap-2.5">
+          <Logo size={38} className="text-mint" />
+          <h1 className="text-[38px] font-bold leading-[1.15] tracking-tight">살껄팔껄!</h1>
+        </div>
         <p className="mt-3 text-[15px] leading-relaxed text-ink2">
           종목도 시기도 가린 차트를 한 봉씩 넘기며 매매해요.
           <br />

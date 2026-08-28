@@ -6,6 +6,7 @@ import { currentUser } from '@/lib/server/auth';
 import { standingOf } from '@/lib/server/daily';
 import { OwnerResult } from '@/components/OwnerResult';
 import { REVEAL_COUNT } from '@/lib/game/types';
+import { Logo } from '@/components/Logo';
 
 export const dynamic = 'force-dynamic';
 
@@ -92,7 +93,10 @@ export default async function SharePage({ params }: { params: Promise<{ id: stri
 
   return (
     <main className="flex flex-1 flex-col px-5 pb-[max(20px,env(safe-area-inset-bottom))] pt-8">
-      <p className="text-[13px] font-bold tracking-wide text-ink3">살껄팔껄</p>
+      <div className="flex items-center gap-1.5">
+        <Logo size={20} className="text-mint" />
+        <p className="text-[14px] font-bold tracking-tight text-ink2">살껄팔껄</p>
+      </div>
 
       <section className="anim-pop mt-4 rounded-card bg-card p-7 text-center">
         <Mascot mood={mood} tone={tone} size={92} className="mx-auto anim-bob" />

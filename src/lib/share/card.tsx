@@ -95,8 +95,15 @@ export function ShareCard({ alpha, rankLabel, actions, width, height, origin, va
       <Mascot color={accent} happy={win} size={s(wide ? 260 : 200)} />
 
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: wide ? 'flex-start' : 'center' }}>
-        <div style={{ display: 'flex', fontSize: s(26), fontWeight: 700, color: INK3, letterSpacing: s(1) }}>
-          살껄팔껄
+        <div style={{ display: 'flex', alignItems: 'center', gap: s(10) }}>
+          {/*
+            satori 는 mask 를 못 그린다. 구멍을 뚫는 대신 배경색으로 칠한 판을 쓴다.
+            (Logo.tsx 의 LogoPainted 와 같은 도형)
+          */}
+          <Bird size={s(34)} color={accent} hole={win ? '#fff5f6' : '#f2f7ff'} />
+          <div style={{ display: 'flex', fontSize: s(26), fontWeight: 700, color: INK3, letterSpacing: s(1) }}>
+            살껄팔껄
+          </div>
         </div>
 
         <div style={{ display: 'flex', marginTop: s(14), fontSize: s(40), fontWeight: 700, color: INK }}>
@@ -220,5 +227,23 @@ function Mascot({ color, happy, size }: { color: string; happy: boolean; size: n
         />
       </div>
     </div>
+  );
+}
+
+/** 껄무새 — 공유 이미지용. 마스크 없이 배경색으로 구멍을 칠한다 */
+function Bird({ size, color, hole }: { size: number; color: string; hole: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 96 96">
+      <rect x="28" y="15" width="54" height="66" rx="26" fill={color} />
+      <path
+        d="M47 28 C35 28, 23 32, 17 40 C13 46, 14 55, 20 56 C24 56, 24 51, 27 48 C33 43, 41 43, 47 44 Z"
+        fill={color}
+      />
+      <path
+        d="M44 46 C36 45, 28 48, 24 52 C21 56, 22 62, 27 65 C33 68, 41 66, 44 60 C46 55, 45 50, 44 46 Z"
+        fill={hole}
+      />
+      <circle cx="58" cy="37" r="6.5" fill={hole} />
+    </svg>
   );
 }
