@@ -7,13 +7,11 @@ export default function Home() {
     <main className="flex flex-1 flex-col px-5 pb-[max(20px,env(safe-area-inset-bottom))]">
       <TopBar />
       <header className="anim-rise mt-4">
-        <h1 className="text-[30px] font-bold leading-[1.25] tracking-tight">
-          존버를 이길 수<br />있을까?
-        </h1>
+        <h1 className="text-[38px] font-bold leading-[1.15] tracking-tight">살껄팔껄!</h1>
         <p className="mt-3 text-[15px] leading-relaxed text-ink2">
           종목도 시기도 가린 차트를 한 봉씩 넘기며 매매해요.
           <br />
-          끝나면 그냥 들고 있었을 때와 비교해드릴게요.
+          상대는 아무것도 안 하고 버틴 <b className="font-bold text-ink">존버</b>예요.
         </p>
       </header>
 
