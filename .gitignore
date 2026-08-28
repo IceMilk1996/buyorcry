@@ -62,3 +62,6 @@ _to_delete/
 /dist.ts
 /ranks.ts
 /tiers.ts
+
+# git 잠금 파일이 치워지는 자리 — 저장소에 들어갈 이유가 없다
+.trash/
