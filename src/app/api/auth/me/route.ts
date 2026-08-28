@@ -18,7 +18,12 @@ export async function GET() {
     // 오늘 이미 했으면 홈에서 결과를 보여준다 (기기가 바뀌어도 유지된다)
     today:
       today && user
-        ? { standing: await standingOf(date, user.id), rankLabel: today.rank.label }
+        ? {
+            standing: await standingOf(date, user.id),
+            rankLabel: today.rank.label,
+            // 그날 결과를 다시 열 수 있게. 이게 없으면 홈에서 막다른 길이 된다
+            shareId: today.shareId ?? null,
+          }
         : null,
   });
 }

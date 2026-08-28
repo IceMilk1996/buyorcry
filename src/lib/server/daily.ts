@@ -21,6 +21,8 @@ export type DailyEntry = {
   myReturn: number;
   rank: Rank;
   at: number;
+  /** 그날 결과를 다시 열 수 있는 링크. 없던 시절 기록은 undefined */
+  shareId?: string;
 };
 
 export type BoardRow = {
@@ -79,6 +81,7 @@ export async function setDailyNick(
 
 export async function standingOf(date: string, userId: string): Promise<DailyStanding> {
   const list = (await hValuesJSON<DailyEntry>(key(date))).sort((a, b) => b.alpha - a.alpha);
+
   const idx = Math.max(0, list.findIndex((e) => e.userId === userId));
   const total = Math.max(1, list.length);
   const place = idx + 1;

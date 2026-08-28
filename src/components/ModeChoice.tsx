@@ -11,6 +11,7 @@ type Me = {
   today: {
     standing: { place: number; total: number; percentile: number };
     rankLabel: string;
+    shareId: string | null;
   } | null;
 };
 
@@ -79,7 +80,12 @@ export function ModeChoice() {
     const s = me.today.standing;
     return (
       <div className="flex flex-col gap-2">
-        <div className="rounded-card bg-card p-5">
+        {/*
+          카드를 눌러 그날 결과로 갈 수 있어야 한다. 전에는 순위와 남은 시간만
+          보여주고 클릭이 안 돼서, 차트가 뭐였는지 다시 보려면 메뉴 →
+          마이페이지 → 지난 판까지 세 번 들어가야 했다.
+        */}
+        <Card href={me.today.shareId ? `/r/${me.today.shareId}` : null}>
           <div className="flex items-baseline justify-between">
             <span className="text-[15px] font-bold">오늘의 챌린지 완료</span>
             <span className="text-[13px] font-semibold text-ink3">{me.today.rankLabel}</span>
@@ -88,13 +94,18 @@ export function ModeChoice() {
             {s.total.toLocaleString('ko-KR')}명 중 {s.place.toLocaleString('ko-KR')}등 · 상위{' '}
             {s.percentile}%
           </p>
-          <p className="mt-3 text-[13px] text-ink3">
-            다음 문제까지{' '}
-            <span className="font-bold tracking-tight text-ink2">
-              {left === null ? '--:--:--' : formatCountdown(left)}
-            </span>
-          </p>
-        </div>
+          <div className="mt-3 flex items-baseline justify-between">
+            <p className="text-[13px] text-ink3">
+              다음 문제까지{' '}
+              <span className="font-bold tracking-tight text-ink2">
+                {left === null ? '--:--:--' : formatCountdown(left)}
+              </span>
+            </p>
+            {me.today.shareId && (
+              <span className="text-[13px] font-bold text-brand">결과 다시 보기 →</span>
+            )}
+          </div>
+        </Card>
         {endless}
       </div>
     );
@@ -230,5 +241,17 @@ function KakaoMark() {
         fill="#191600"
       />
     </svg>
+  );
+}
+
+/** 링크가 있으면 누를 수 있는 카드로, 없으면 그냥 카드로 */
+function Card({ href, children }: { href: string | null; children: React.ReactNode }) {
+  const cls = 'block rounded-card bg-card p-5';
+  return href ? (
+    <Link href={href} className={`pressable ${cls}`}>
+      {children}
+    </Link>
+  ) : (
+    <div className={cls}>{children}</div>
   );
 }

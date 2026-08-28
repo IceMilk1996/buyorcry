@@ -169,7 +169,15 @@ export default function PlayPage() {
         shareId={shareId}
         standing={standing}
         date={date}
-        onRetry={() => void start()}
+        mode={mode}
+        onRetry={() => {
+          /*
+           * 데일리는 오늘 몫을 이미 썼으므로 같은 모드로 다시 시작하면 409 다.
+           * 무한 모드로 주소를 바꿔서 다시 들어간다.
+           */
+          if (mode === 'daily') window.location.href = '/play?mode=endless';
+          else void start();
+        }}
       />;
   }
 

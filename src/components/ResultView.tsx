@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useState } from 'react';
 import { Action } from '@/lib/game/types';
 
@@ -52,6 +53,7 @@ export function ResultView({
   shareId,
   standing: initialStanding,
   date,
+  mode,
   onRetry,
 }: {
   result: ResultPayload;
@@ -61,6 +63,8 @@ export function ResultView({
   /** 오늘의 챌린지에서만 들어온다. 무한 모드는 차트가 달라 순위가 성립하지 않는다 */
   standing: Standing | null;
   date: string | null;
+  /** 방금 끝낸 판이 어느 모드였는지. 아래 버튼 문구가 달라진다 */
+  mode: 'daily' | 'endless';
   onRetry: () => void;
 }) {
   const [copied, setCopied] = useState(false);
@@ -99,7 +103,14 @@ export function ResultView({
     return acc;
   }, []);
 
-  const shareUrl = shareId ? `${location.origin}/r/${shareId}` : '';
+  /*
+   * location 을 컴포넌트 본문에서 읽으면 안 된다.
+   * 클라이언트 컴포넌트라도 첫 HTML 은 서버에서 렌더링되므로 그 시점에는
+   * location 이 없다. /play 에서만 쓸 때는 항상 클라이언트에서만 그려져서
+   * 안 드러났는데, 공유 링크의 본인 화면(/r/[id])에서 서버 렌더링을 타면서
+   * "location is not defined" 로 터졌다. 누를 때 만들면 된다.
+   */
+  const shareUrl = () => (shareId ? `${window.location.origin}/r/${shareId}` : '');
 
   /**
    * 링크 공유.
@@ -108,13 +119,14 @@ export function ResultView({
    */
   async function share() {
     const text = shareText(result);
-    const payload = shareUrl ? { text, url: shareUrl } : { text };
+    const url = shareUrl();
+    const payload = url ? { text, url } : { text };
     try {
       if (navigator.share) {
         await navigator.share(payload);
         return;
       }
-      await navigator.clipboard.writeText(shareUrl ? `${text}\n${shareUrl}` : text);
+      await navigator.clipboard.writeText(url ? `${text}\n${url}` : text);
       setCopied(true);
       setTimeout(() => setCopied(false), 1800);
     } catch {
@@ -321,13 +333,24 @@ export function ResultView({
             {imgBusy ? '만드는 중' : '이미지 저장'}
           </button>
         </div>
+        {/*
+          데일리에서 그냥 '한 판 더' 를 누르면 오늘 몫이 이미 없어서 409 를 받고
+          아무 설명 없이 홈으로 튕겼다. 버튼이 하는 말과 실제가 달랐다.
+          오늘 몫은 썼으니 갈 곳은 무한 모드다.
+        */}
         <button
           type="button"
           onClick={onRetry}
           className="pressable h-[58px] rounded-btn bg-brand text-[17px] font-bold text-white"
         >
-          한 판 더
+          {mode === 'daily' ? '무한 모드로 한 판 더' : '한 판 더'}
         </button>
+        <Link
+          href="/"
+          className="pressable flex h-[52px] items-center justify-center rounded-btn text-[15px] font-semibold text-ink3"
+        >
+          홈으로
+        </Link>
       </div>
     </div>
   );

@@ -61,6 +61,7 @@ export async function POST(req: Request) {
     // 데일리만 순위가 성립한다 — 전원이 같은 차트를 풀기 때문
     if (s.mode === 'daily' && s.userId) {
       standing = await submitDaily(s.date, {
+        shareId,
         userId: s.userId,
         nick: s.nick,
         alpha: r.alpha,
@@ -89,6 +90,8 @@ export async function POST(req: Request) {
       });
     }
 
+    const reveal = s.window.map((c) => ({ t: c.t, o: c.o, h: c.h, l: c.l, c: c.c }));
+
     await putShare({
       id: shareId,
       createdAt: Date.now(),
@@ -104,6 +107,10 @@ export async function POST(req: Request) {
       name: s.name,
       from: s.window[REVEAL_COUNT].t,
       to: s.window[s.window.length - 1].t,
+      userId: s.userId,
+      mode: s.mode,
+      date: s.date,
+      revealCandles: reveal,
     });
   }
 

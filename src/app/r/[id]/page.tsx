@@ -2,6 +2,10 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 import { compressActions, getShare, toPublic } from '@/lib/server/share';
 import { Mascot, moodFor } from '@/components/Mascot';
+import { currentUser } from '@/lib/server/auth';
+import { standingOf } from '@/lib/server/daily';
+import { OwnerResult } from '@/components/OwnerResult';
+import { REVEAL_COUNT } from '@/lib/game/types';
 
 export const dynamic = 'force-dynamic';
 
@@ -45,6 +49,39 @@ export default async function SharePage({ params }: { params: Promise<{ id: stri
           나도 해보기
         </Link>
       </main>
+    );
+  }
+
+  /*
+   * 본인이 열었으면 전체 결과를 보여준다.
+   * 감출 이유가 없고, 오늘의 챌린지는 하루 한 판뿐이라 다시 볼 곳이 필요하다.
+   * 아래 공개 화면은 '남이 열었을 때' 전용이다.
+   */
+  const me = await currentUser();
+  if (rec.userId && me?.id === rec.userId) {
+    return (
+      <OwnerResult
+        result={{
+          finalEquity: rec.finalEquity,
+          myReturn: rec.myReturn,
+          holdReturn: rec.holdReturn,
+          alpha: rec.alpha,
+          rank: rec.rank,
+          actions: rec.actions,
+          tradeCount: rec.actions.filter((a) => a !== 'HOLD').length,
+          symbol: rec.symbol,
+          name: rec.name,
+          interval: rec.interval,
+          from: rec.from,
+          to: rec.to,
+          revealCandles: rec.revealCandles,
+        }}
+        revealCount={REVEAL_COUNT}
+        shareId={rec.id}
+        standing={rec.mode === 'daily' ? await standingOf(rec.date, rec.userId) : null}
+        date={rec.date}
+        mode={rec.mode}
+      />
     );
   }
 

@@ -33,6 +33,15 @@ export type ShareRecord = {
   name: string;
   from: string;
   to: string;
+  /**
+   * 이 판을 친 사람. 본인이 링크를 열면 전체 결과를 다시 보여주기 위해 쓴다.
+   * 남에게는 이 필드가 존재한다는 사실조차 나가지 않는다(toPublic 참조).
+   */
+  userId: string | null;
+  mode: 'daily' | 'endless';
+  date: string;
+  /** 사전공개 + 플레이 구간 전체. 본인 재관람용 차트 */
+  revealCandles: { t: string; o: number; h: number; l: number; c: number }[];
 };
 
 /** 링크를 연 사람에게 내려보내는 형태 */
