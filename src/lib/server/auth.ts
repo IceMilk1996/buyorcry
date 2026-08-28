@@ -16,8 +16,18 @@ import { getJSON, setJSON } from './kv';
 
 export type User = { id: string; nick: string | null; provider: 'kakao' | 'dev' };
 
-const COOKIE = 'cg_uid';
-const MAX_AGE = 60 * 60 * 24 * 180;
+export const COOKIE = 'cg_uid';
+export const MAX_AGE = 60 * 60 * 24 * 180;
+
+export function cookieOptions() {
+  return {
+    httpOnly: true,
+    sameSite: 'lax' as const,
+    secure: process.env.NODE_ENV === 'production',
+    path: '/',
+    maxAge: MAX_AGE,
+  };
+}
 
 /** 계정은 만료시키지 않는다 — 쿠키(180일)보다 오래 살아야 한다 */
 const key = (id: string) => `user:${id}`;
@@ -69,14 +79,16 @@ export async function signIn(provider: 'kakao' | 'dev', providerId: string): Pro
   const user = (await getJSON<User>(key(id))) ?? { id, nick: null, provider };
   await setJSON(key(id), user);
 
-  (await cookies()).set(COOKIE, sign(id), {
-    httpOnly: true,
-    sameSite: 'lax',
-    secure: process.env.NODE_ENV === 'production',
-    path: '/',
-    maxAge: MAX_AGE,
-  });
+  (await cookies()).set(COOKIE, sign(id), cookieOptions());
   return user;
+}
+
+/**
+ * 쿠키에 넣을 서명된 값. 직접 만든 응답(리다이렉트 등)에 쿠키를 붙여야 할 때 쓴다 —
+ * next/headers 의 cookies().set 이 그런 응답에도 실리는지는 보장돼 있지 않다.
+ */
+export function signedCookieValue(id: string): string {
+  return sign(id);
 }
 
 export async function signOut(): Promise<void> {

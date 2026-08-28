@@ -24,12 +24,26 @@ type Me = {
 export function ModeChoice() {
   const [me, setMe] = useState<Me | null>(null);
   const [left, setLeft] = useState<number | null>(null);
+  const [loginFail, setLoginFail] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     try {
       setMe(await (await fetch('/api/auth/me')).json());
     } catch {
       setMe({ user: null, kakaoReady: false, devLogin: false, today: null });
+    }
+  }, []);
+
+  /*
+   * 로그인이 실패하면 카카오 콜백이 /?login=fail&at=... 로 돌려보낸다.
+   * 이걸 화면에 안 띄우면 "눌렀는데 그대로네" 만 남고 원인을 알 수가 없다.
+   * 실제로 클라이언트 시크릿 때문에 토큰 발급이 막혔을 때 이걸로 한참 헤맸다.
+   */
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search);
+    if (q.get('login') === 'fail') {
+      setLoginFail(q.get('at') ?? 'unknown');
+      window.history.replaceState(null, '', window.location.pathname);
     }
   }, []);
 
@@ -107,6 +121,13 @@ export function ModeChoice() {
   // 비로그인
   return (
     <div className="flex flex-col gap-2">
+      {loginFail && (
+        <div className="rounded-btn bg-card px-5 py-4 text-center text-[13px] leading-relaxed text-up">
+          로그인을 마치지 못했어요. 다시 시도해 주세요.
+          <br />
+          <span className="text-[11px] text-ink3">({loginFail})</span>
+        </div>
+      )}
       {me.kakaoReady ? (
         <a
           href="/api/auth/kakao"
