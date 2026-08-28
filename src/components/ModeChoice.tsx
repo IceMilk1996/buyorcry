@@ -71,6 +71,24 @@ export function ModeChoice() {
 
   if (!me) return <div className="h-[152px] animate-pulse rounded-btn bg-card/60" />;
 
+  /*
+   * 로그아웃은 눈에 띄지 않아도 되지만 없으면 안 된다 — 기기를 나눠 쓰거나
+   * 계정을 바꿔야 할 때 나갈 방법이 있어야 한다.
+   * 하다 만 판은 회원번호에 묶여 있어서 다시 로그인하면 그 자리부터 이어진다.
+   */
+  const signOutRow = (
+    <button
+      type="button"
+      onClick={async () => {
+        await fetch('/api/auth/logout', { method: 'POST' });
+        await load();
+      }}
+      className="pressable mt-1 py-2 text-center text-[12px] font-medium text-ink3"
+    >
+      로그아웃
+    </button>
+  );
+
   // 이미 오늘 몫을 썼다
   if (me.today) {
     const s = me.today.standing;
@@ -93,11 +111,12 @@ export function ModeChoice() {
           </p>
         </div>
         {endless}
+        {signOutRow}
       </div>
     );
   }
 
-  // 로그인 완료 — 바로 시작
+  // 로그인 완료 — 시작은 사용자가 직접 누른다
   if (me.user) {
     return (
       <div className="flex flex-col gap-2">
@@ -114,6 +133,7 @@ export function ModeChoice() {
           <span className="text-[18px] font-bold opacity-70">→</span>
         </Link>
         {endless}
+        {signOutRow}
       </div>
     );
   }
