@@ -358,9 +358,18 @@ function Cell({
   );
 }
 
-/** 30턴을 10칸으로 압축한다. 길면 아무도 공유하지 않는다. */
+/**
+ * 30턴을 10칸으로 압축한다. 길면 아무도 공유하지 않는다.
+ *
+ * ⚠️ 내 수익률은 절대 넣지 않는다.
+ *    알파와 나란히 두면 `존버 수익률 = 내 수익률 − 알파` 가 정확히 나오고,
+ *    존버 수익률은 곧 "이 차트가 올랐나"라는 정답이다. 데일리는 전원이 같은
+ *    차트를 풀기 때문에 이 한 줄이면 아직 안 푼 사람의 게임이 끝난다.
+ *    공유 페이지·OG 이미지는 이 규칙을 지키고 있었는데, 링크와 함께 보내는
+ *    이 텍스트만 새고 있었다. (기획서 7.1, share.ts 주석)
+ */
 export function shareText(r: ResultPayload): string {
-  const size = Math.ceil(r.actions.length / 10);
+  const size = Math.max(1, Math.ceil(r.actions.length / 10));
   const cells: string[] = [];
   for (let i = 0; i < r.actions.length; i += size) {
     const chunk = r.actions.slice(i, i + size);
@@ -368,7 +377,7 @@ export function shareText(r: ResultPayload): string {
   }
   return [
     `📈 살껄팔껄`,
-    `${fmtPct(r.myReturn)} (존버 대비 ${fmtPct(r.alpha)})`,
+    `존버보다 ${fmtPct(r.alpha)}`,
     ``,
     cells.join(''),
     `🟥 매수  🟦 매도  ⬜ 관망`,
