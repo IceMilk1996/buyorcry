@@ -113,14 +113,32 @@ function Item({
   onClick?: () => void;
   children: React.ReactNode;
 }) {
-  return (
-    <Link
-      href={href}
-      onClick={onClick}
-      className="pressable flex h-[54px] items-center justify-between border-b border-line text-[16px] font-semibold text-ink"
-    >
+  const cls =
+    'pressable flex h-[54px] items-center justify-between border-b border-line text-[16px] font-semibold text-ink';
+  const inner = (
+    <>
       {children}
       <span className="text-[15px] font-bold text-ink3">→</span>
+    </>
+  );
+
+  /*
+   * /api/* 는 페이지가 아니라서 next/link 로 가면 안 된다.
+   * Link 는 클라이언트 이동을 하려고 RSC 페이로드를 먼저 가져오는데,
+   * /api/auth/kakao 는 카카오로 넘기는 리다이렉트라 그 요청이 실패한다
+   * ("Failed to fetch RSC payload"). 브라우저에게 그냥 이동시켜야 한다.
+   */
+  if (href.startsWith('/api/')) {
+    return (
+      <a href={href} onClick={onClick} className={cls}>
+        {inner}
+      </a>
+    );
+  }
+
+  return (
+    <Link href={href} onClick={onClick} className={cls}>
+      {inner}
     </Link>
   );
 }
