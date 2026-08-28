@@ -3,7 +3,12 @@ import { PLAY_COUNT, REVEAL_COUNT, WINDOW_SIZE, INITIAL_CAPITAL } from '@/lib/ga
 import { createGame } from '@/lib/game/engine';
 import { dailySeed, makeRng } from '@/lib/game/puzzle';
 import { pickPuzzleServer, todayKST } from '@/lib/server/data';
-import { newSessionId, putSession } from '@/lib/server/store';
+import {
+  findDailyProgress,
+  newSessionId,
+  putSession,
+  type SessionRecord,
+} from '@/lib/server/store';
 import { currentUser } from '@/lib/server/auth';
 import { findTodayEntry } from '@/lib/server/daily';
 
@@ -39,6 +44,16 @@ export async function POST(req: Request) {
         { status: 409 }
       );
     }
+
+    /*
+     * 하다 만 판이 있으면 새로 뽑지 않고 그 자리로 돌려보낸다.
+     * 뒤로 가기나 재로그인으로 화면을 벗어나는 건 흔한데, 오늘의 챌린지는
+     * 하루 한 번뿐이라 그때마다 그날 몫을 날리게 된다.
+     * 이어하기는 공정성도 해치지 않는다 — 차트를 다시 뽑을 수도, 이미 본 봉을
+     * 안 본 걸로 만들 수도 없으니 나갔다 오는 게 이득이 되지 않는다.
+     */
+    const going = await findDailyProgress(todayKST(), user.id);
+    if (going) return NextResponse.json(snapshot(going));
   }
 
   const seed = mode === 'daily' ? dailySeed(todayKST()) : (Math.random() * 2 ** 32) >>> 0;
@@ -57,11 +72,12 @@ export async function POST(req: Request) {
   const window = series.candles.slice(puzzle.startIndex, puzzle.startIndex + WINDOW_SIZE);
 
   const id = newSessionId();
-  await putSession({
+  const rec: SessionRecord = {
     id,
     symbol: puzzle.symbol,
     name: puzzle.name,
     interval: puzzle.interval,
+    difficulty: puzzle.difficulty,
     mode,
     date: todayKST(),
     userId: user?.id ?? null,
@@ -70,21 +86,47 @@ export async function POST(req: Request) {
     state: createGame(),
     done: false,
     createdAt: Date.now(),
-  });
+  };
+  await putSession(rec);
 
-  return NextResponse.json({
-    sessionId: id,
-    mode,
-    date: todayKST(),
-    difficulty: puzzle.difficulty,
+  return NextResponse.json(snapshot(rec));
+}
+
+/**
+ * 화면이 판을 그리는 데 필요한 전부. 새 판이든 이어하기든 같은 모양이라
+ * 클라이언트는 둘을 구분하지 않아도 된다.
+ *
+ * ⚠️ 진행된 만큼만 잘라 보낸다. window 를 통째로 보내면 개발자도구에
+ *    미래 봉이 그대로 보인다(기획서 7.1).
+ */
+function snapshot(s: SessionRecord) {
+  const shown = REVEAL_COUNT + s.state.turn;
+
+  // 턴마다 보유 중이었는지 — 차트의 보유 구간 음영에 쓴다.
+  // 기록된 액션은 이미 '실제로 적용된' 것이라 그대로 되짚으면 된다(engine.step 참조)
+  let held = false;
+  const holdMask = s.state.actions.map(
+    (a) => (held = a === 'BUY' ? true : a === 'SELL' ? false : held)
+  );
+
+  return {
+    sessionId: s.id,
+    mode: s.mode,
+    date: s.date,
+    difficulty: s.difficulty,
     // 종목명·날짜·절대가격은 결과 공개 전까지 내려가지 않는다
-    candles: window.slice(0, REVEAL_COUNT).map(strip),
-    turn: 0,
+    candles: s.window.slice(0, shown).map(strip),
+    revealCount: REVEAL_COUNT,
+    turn: s.state.turn,
     totalTurns: PLAY_COUNT,
-    cash: INITIAL_CAPITAL,
-    qty: 0,
-    equity: INITIAL_CAPITAL,
-  });
+    cash: s.state.cash,
+    qty: s.state.qty,
+    equity: s.state.equityCurve[s.state.equityCurve.length - 1] ?? INITIAL_CAPITAL,
+    entryPrice: s.entryPrice ?? null,
+    actions: s.state.actions,
+    holdMask,
+    resumed: s.state.turn > 0,
+  };
 }
 
 /** 날짜를 지우고 가격만 남긴다 */

@@ -76,7 +76,7 @@ export async function POST(req: Request) {
       rank: r.rank,
       actions: r.actions,
       interval: s.interval,
-      difficulty: 'NORMAL',
+      difficulty: s.difficulty,
       myReturn: r.myReturn,
       holdReturn: r.holdReturn,
       finalEquity: r.finalEquity,

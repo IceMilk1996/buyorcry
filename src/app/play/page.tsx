@@ -66,16 +66,22 @@ export default function PlayPage() {
         }
         throw new Error(data.error ?? '시작하지 못했습니다.');
       }
+      /*
+       * 새 판이든 이어하기든 서버가 같은 모양으로 내려준다.
+       * 오늘의 챌린지는 하루 한 번뿐이라, 뒤로 가기나 재로그인으로 화면을
+       * 벗어났다 돌아오면 하던 턴부터 이어서 시작된다.
+       */
       setSessionId(data.sessionId);
       setBars(data.candles);
-      setRevealCount(data.candles.length);
-      setTurn(0);
+      setRevealCount(data.revealCount ?? data.candles.length);
+      setTurn(data.turn ?? 0);
       setTotalTurns(data.totalTurns);
       setEquity(data.equity);
-      setHolding(false);
-      setHoldMask([]);
-      setActions([]);
-      setEntryPrice(null);
+      setHolding((data.qty ?? 0) > 0);
+      setHoldMask(data.holdMask ?? []);
+      setActions(data.actions ?? []);
+      setEntryPrice(data.entryPrice ?? null);
+      setDate(data.date ?? null);
       setPhase('playing');
     } catch (e) {
       setError((e as Error).message);
