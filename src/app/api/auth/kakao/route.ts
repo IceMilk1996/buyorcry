@@ -11,8 +11,33 @@ export const dynamic = 'force-dynamic';
  */
 export async function GET() {
   if (!kakaoConfigured()) {
+    /*
+     * 어느 변수가 비었는지 이름으로 말해준다.
+     *
+     * "설정하세요" 까지만 적혀 있으면, 대시보드에는 값이 멀쩡히 보이는데
+     * 서버는 못 읽는 상황에서 아무 단서가 없다. 값은 절대 싣지 않지만
+     * *이름*은 비밀이 아니고, 이 한 줄이 원인 찾는 시간을 줄인다.
+     */
+    const missing = (
+      [
+        ['KAKAO_CLIENT_ID', kakaoClientId()],
+        ['KAKAO_REDIRECT_URI', kakaoRedirectUri()],
+      ] as const
+    )
+      .filter(([, value]) => !value)
+      .map(([name]) => name);
+
     return NextResponse.json(
-      { error: '카카오 앱이 아직 연결되지 않았어요. KAKAO_CLIENT_ID / KAKAO_REDIRECT_URI 를 설정하세요.' },
+      {
+        error: `카카오 앱이 아직 연결되지 않았어요. 서버가 못 읽은 환경변수: ${missing.join(', ')}`,
+        missing,
+        // 지금까지 이 셋 말고 다른 원인이었던 적이 없다
+        checklist: [
+          '값을 넣은 뒤 재배포했는지 (환경변수는 빌드 때 주입된다)',
+          '변수를 Production 환경에도 체크했는지 (Preview 에만 걸려 있는 경우가 많다)',
+          '변수 이름이나 값에 앞뒤 공백이 섞이지 않았는지',
+        ],
+      },
       { status: 501 }
     );
   }

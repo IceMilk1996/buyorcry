@@ -29,11 +29,22 @@ export function ModeChoice() {
   /** 비로그인 상태에서 오늘의 챌린지를 눌렀을 때 올라오는 안내 */
   const [ask, setAsk] = useState(false);
 
+  /*
+   * 못 불러온 것과 '카카오가 아직 연결 안 됨' 은 다른 상태다.
+   * 예전에는 실패해도 kakaoReady:false 로 덮어써서, 네트워크가 끊겼을 뿐인데
+   * "카카오 로그인이 아직 연결되지 않았어요" 라는 엉뚱한 진단이 떴다.
+   */
+  const [loadFailed, setLoadFailed] = useState(false);
+
   const load = useCallback(async () => {
     try {
-      setMe(await (await fetch('/api/auth/me')).json());
+      const res = await fetch('/api/auth/me');
+      if (!res.ok) throw new Error(String(res.status));
+      setMe(await res.json());
+      setLoadFailed(false);
     } catch {
       setMe({ user: null, kakaoReady: false, devLogin: false, today: null });
+      setLoadFailed(true);
     }
   }, []);
 
@@ -214,7 +225,9 @@ export function ModeChoice() {
                 </button>
               ) : (
                 <div className="rounded-btn bg-bg px-5 py-4 text-center text-[13px] leading-relaxed text-ink3">
-                  카카오 로그인이 아직 연결되지 않았어요
+                  {loadFailed
+                    ? '지금은 로그인 상태를 확인할 수 없어요. 잠시 뒤에 다시 눌러주세요'
+                    : '카카오 로그인이 아직 연결되지 않았어요'}
                 </div>
               )}
 
