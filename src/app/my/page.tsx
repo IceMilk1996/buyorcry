@@ -20,7 +20,7 @@ export default async function MyPage() {
   if (!user) {
     return (
       <main className="flex flex-1 flex-col px-5 pb-[max(20px,env(safe-area-inset-bottom))]">
-        <TopBar title="마이페이지" />
+        <TopBar title="마이페이지" back />
         <div className="flex flex-1 flex-col items-center justify-center gap-4">
           <p className="text-[15px] text-ink3">로그인하면 내 전적을 볼 수 있어요.</p>
           <Link
@@ -38,7 +38,7 @@ export default async function MyPage() {
 
   return (
     <main className="flex flex-1 flex-col px-5 pb-[max(20px,env(safe-area-inset-bottom))]">
-      <TopBar title="마이페이지" />
+      <TopBar title="마이페이지" back />
 
       {/* 이름을 안 정한 사람에게 '익명님' 이라고 부르지 않는다 */}
       <h1 className="mt-2 text-[24px] font-bold tracking-tight">

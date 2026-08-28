@@ -9,7 +9,7 @@ import Link from 'next/link';
  * 플레이 화면에는 넣지 않는다 — 거기는 스크롤 없이 한 화면에 들어가야 해서
  * 세로 공간을 한 줄도 더 쓸 수 없다(기획서 8장).
  */
-export function TopBar({ title }: { title?: string }) {
+export function TopBar({ title, back }: { title?: string; back?: boolean }) {
   const [open, setOpen] = useState(false);
   const [user, setUser] = useState<{ id: string } | null>(null);
   const [kakaoReady, setKakaoReady] = useState(false);
@@ -43,7 +43,24 @@ export function TopBar({ title }: { title?: string }) {
   return (
     <>
       <div className="flex h-12 shrink-0 items-center justify-between">
-        <span className="text-[15px] font-bold text-ink2">{title ?? ''}</span>
+        {/*
+          홈이 아닌 화면에는 돌아갈 길이 있어야 한다. 메뉴에서 '홈' 을 뺐기
+          때문에, 이게 없으면 마이페이지가 브라우저 뒤로가기 말고는 나갈 수
+          없는 막다른 길이 된다. 메뉴 항목이 아니라 뒤로 버튼으로 두는 이유는
+          같은 길을 두 번 만들지 않기 위해서다.
+        */}
+        {back ? (
+          <Link
+            href="/"
+            aria-label="홈으로"
+            className="pressable -ml-2 flex h-10 items-center gap-1.5 rounded-full pl-2 pr-3"
+          >
+            <span className="text-[17px] font-bold leading-none text-ink2">←</span>
+            <span className="text-[15px] font-bold text-ink2">{title ?? '홈'}</span>
+          </Link>
+        ) : (
+          <span className="text-[15px] font-bold text-ink2">{title ?? ''}</span>
+        )}
         <button
           type="button"
           aria-label="메뉴"
