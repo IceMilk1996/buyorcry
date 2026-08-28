@@ -92,7 +92,18 @@ export function holdReturnOf(playCandles: Candle[]): number {
 
 export function finalize(s: GameState, playCandles: Candle[]): GameResult {
   const lastPrice = playCandles[playCandles.length - 1].c;
-  const finalEquity = equityAt(s, lastPrice);
+
+  /*
+   * 마지막에 보유 중이면 종가에 청산한다 — 매도 수수료를 포함해서.
+   *
+   * 예전에는 그냥 `현금 + 수량 × 종가` 로 끝내서 매도 수수료를 면제했다.
+   * 그런데 존버 기준선(holdReturnOf)은 왕복 수수료를 문다. 그래서 1턴에 사서
+   * 끝까지 든 사람은 아무 이득 없이 알파가 항상 +0.05% 쯤 나왔고,
+   * "존버 알파는 0에 붙는다"는 전제가 미세하게 깨져 있었다.
+   * 1주차 검증에서 존버 알파가 +0.1% 로 나온 게 이 편향이었다.
+   */
+  const finalEquity =
+    s.qty > 0 ? s.cash + s.qty * lastPrice * (1 - FEE_RATE) : equityAt(s, lastPrice);
   const myReturn = finalEquity / INITIAL_CAPITAL - 1;
   const holdReturn = holdReturnOf(playCandles);
   const alpha = myReturn - holdReturn;
