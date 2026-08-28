@@ -14,7 +14,13 @@ export function TopBar({ title }: { title?: string }) {
   const [user, setUser] = useState<{ id: string } | null>(null);
   const [kakaoReady, setKakaoReady] = useState(false);
 
+  /*
+   * 열 때마다 다시 읽는다.
+   * 마운트할 때 한 번만 읽으면, 같은 페이지에서 로그인한 경우(홈의 로그인
+   * 시트처럼 새로고침 없이 상태가 바뀌는 경우) 메뉴만 비로그인으로 남는다.
+   */
   useEffect(() => {
+    if (!open) return;
     void (async () => {
       try {
         const me = await (await fetch('/api/auth/me')).json();
@@ -24,7 +30,7 @@ export function TopBar({ title }: { title?: string }) {
         /* 메뉴는 부가 기능이라 실패해도 화면을 막지 않는다 */
       }
     })();
-  }, []);
+  }, [open]);
 
   // 메뉴가 열린 동안 뒤 배경이 따라 움직이면 시트가 떠 있는 느낌이 깨진다
   useEffect(() => {
@@ -61,20 +67,23 @@ export function TopBar({ title }: { title?: string }) {
           >
             <div className="mx-auto h-1 w-9 rounded-full bg-line" />
 
+            {/*
+              홈과 무한 모드는 넣지 않는다. 둘 다 홈 화면에 이미 큰 버튼으로
+              있어서, 메뉴에 또 두면 같은 길을 두 번 만드는 셈이다.
+              메뉴는 홈에 자리가 없는 것만 맡는다.
+            */}
             <nav className="mt-4 flex flex-col">
               {user ? (
                 <Item href="/my" onClick={() => setOpen(false)}>
                   마이페이지
                 </Item>
               ) : kakaoReady ? (
-                <Item href="/api/auth/kakao">카카오로 시작하기</Item>
-              ) : null}
-              <Item href="/play?mode=endless" onClick={() => setOpen(false)}>
-                무한 모드
-              </Item>
-              <Item href="/" onClick={() => setOpen(false)}>
-                홈
-              </Item>
+                <Item href="/api/auth/kakao">카카오로 로그인</Item>
+              ) : (
+                <p className="border-b border-line py-5 text-[14px] text-ink3">
+                  카카오 로그인이 아직 연결되지 않았어요
+                </p>
+              )}
             </nav>
 
             <button
