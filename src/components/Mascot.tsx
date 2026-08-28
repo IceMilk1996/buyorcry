@@ -1,4 +1,4 @@
-import { BEAK, BODY, drop, EYE, EYE_SAD, EYE_SQUINT, MOUTH } from './kkeolmusae';
+import { BEAK, BODY, BROW, drop, EYE, EYE_SAD, EYE_SQUINT, MOUTH } from './kkeolmusae';
 
 export type Mood = 'happy' | 'neutral' | 'worried' | 'party' | 'shock';
 export type Tone = 'up' | 'down' | 'flat';
@@ -34,13 +34,15 @@ export function Mascot({
 }) {
   const color = BODY_COLOR[tone];
   const mouth =
-    mood === 'party' || mood === 'shock'
-      ? MOUTH.wide
-      : mood === 'happy'
-        ? MOUTH.open
-        : mood === 'worried'
-          ? MOUTH.small
-          : MOUTH.shut;
+    mood === 'shock'
+      ? MOUTH.scream
+      : mood === 'party'
+        ? MOUTH.wide
+        : mood === 'happy'
+          ? MOUTH.open
+          : mood === 'worried'
+            ? MOUTH.small
+            : MOUTH.shut;
   const squint = mood === 'happy' || mood === 'party';
   const id = `kkeolmusae-${mood}`;
 
@@ -56,15 +58,19 @@ export function Mascot({
             // 우는 눈 — 웃는 눈을 아래로 뒤집은 것뿐인데 정반대로 읽힌다
             <path d={EYE_SAD} stroke="#000" strokeWidth="4.4" strokeLinecap="round" fill="none" />
           ) : mood === 'shock' ? (
-            // 절규 — 눈을 크게 뚫고 안에 작은 눈동자를 남긴다. X 눈은 기절이지 절규가 아니다
-            <circle cx={EYE.cx} cy={EYE.cy} r="10" fill="#000" />
+            // 절규 — 크게 뜬 눈과 치켜올라간 눈썹. X 눈은 기절이지 절규가 아니다
+            <>
+              <circle cx={EYE.cx} cy={EYE.cy} r="10.5" fill="#000" />
+              <path d={BROW} stroke="#000" strokeWidth="4" strokeLinecap="round" fill="none" />
+            </>
           ) : (
             <circle cx={EYE.cx} cy={EYE.cy} r={EYE.r} fill="#000" />
           )}
         </mask>
       </defs>
 
-      <g mask={`url(#${id})`}>
+      {/* 절규일 때만 살짝 기울인다. 똑바로 서 있으면 비명으로 안 보인다 */}
+      <g mask={`url(#${id})`} transform={mood === 'shock' ? 'rotate(-5 48 48)' : undefined}>
         <rect x={BODY.x} y={BODY.y} width={BODY.w} height={BODY.h} rx={BODY.r} fill={color} />
         <path d={BEAK} fill={color} />
       </g>
@@ -72,13 +78,22 @@ export function Mascot({
       {/* 절규 — 크게 뚫은 눈 안에 작은 눈동자, 그리고 머리 둘레의 떨림선 */}
       {mood === 'shock' && (
         <>
-          <circle cx={EYE.cx + 1} cy={EYE.cy + 1} r="3" fill={color} />
-          <g stroke={color} strokeWidth="3.6" strokeLinecap="round" opacity="0.85">
-            <path d="M85 20 L92 13" />
-            <path d="M88 33 L96 31" />
-            <path d="M74 11 L76 3" />
-            <path d="M22 26 L16 20" />
-            <path d="M33 14 L31 6" />
+          {/* 눈동자를 아주 작게 — 흰자가 많이 보일수록 공포로 읽힌다 */}
+          <circle cx={EYE.cx + 1.5} cy={EYE.cy + 1.5} r="2.4" fill={color} />
+          {/* 떨림선 — 머리 둘레에 촘촘하게 */}
+          <g stroke={color} strokeWidth="3.4" strokeLinecap="round" opacity="0.9">
+            <path d="M86 18 L93 11" />
+            <path d="M90 32 L96 30" />
+            <path d="M87 46 L94 48" />
+            <path d="M72 10 L73 2" />
+            <path d="M55 8 L52 1" />
+            <path d="M24 24 L17 18" />
+            <path d="M35 13 L33 5" />
+          </g>
+          {/* 튀는 땀 */}
+          <g fill="#8ec9ff" opacity="0.95">
+            <path d={drop(20, 66)} />
+            <path d={drop(88, 60)} />
           </g>
         </>
       )}
