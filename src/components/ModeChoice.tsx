@@ -207,9 +207,10 @@ export function ModeChoice() {
                 </div>
               )}
 
+              {/* 위 버튼과 높이를 맞춘다. 나란히 선 두 버튼은 크기가 다르면 눈에 걸린다 */}
               <Link
                 href="/play?mode=endless"
-                className="pressable flex h-[52px] items-center justify-center rounded-btn bg-bg text-[15px] font-bold text-ink2"
+                className="pressable flex h-[58px] items-center justify-center rounded-btn bg-bg text-[15px] font-bold text-ink2"
               >
                 로그인 없이 무한 모드로
               </Link>
