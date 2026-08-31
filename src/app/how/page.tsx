@@ -53,13 +53,8 @@ export default function HowPage() {
     <main className="flex flex-1 flex-col px-5 pb-[max(24px,env(safe-area-inset-bottom))]">
       <TopBar title="게임 방법" back />
 
-      <h1 className="mt-2 text-[26px] font-bold leading-snug tracking-tight">
-        한 판은
-        <br />
-        이렇게 흘러가요
-      </h1>
-
-      <ol className="mt-6 space-y-3">
+      {/* 상단바에 이미 '게임 방법' 이 있다. 제목을 한 번 더 쓰면 같은 말이 두 번이다 */}
+      <ol className="mt-4 space-y-3">
         {STEPS.map(({ n, title, body, Illust }) => (
           <li key={n} className="rounded-card bg-card p-5">
             <div className="text-[11px] font-bold tracking-wider text-ink3">STEP {n}</div>
