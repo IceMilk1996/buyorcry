@@ -4,7 +4,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "살껄팔껄 — 존버를 이길 수 있을까",
   description:
-    "종목명과 시기를 가린 과거 차트를 한 봉씩 넘기며 매매하고, 끝나면 그냥 들고 있었을 때와 비교당하는 게임.",
+    "무슨 회사인지 언제인지 가린 차트를 한 칸씩 넘기면서 사고팔고, 끝나면 그냥 사두고 가만히 있었을 때와 비교당하는 게임.",
 };
 
 export const viewport: Viewport = {

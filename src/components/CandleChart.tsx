@@ -42,7 +42,7 @@ export function CandleChart({
   slots?: number;
   /** 보유 중일 때의 체결가. 수평선으로 그린다 */
   entryPrice?: number | null;
-  /** 다음에 열릴 봉 자리를 표시할지 (플레이 중일 때만) */
+  /** 다음에 열릴 칸을 표시할지 (플레이 중일 때만) */
   markNext?: boolean;
   className?: string;
 }) {
@@ -156,7 +156,7 @@ export function CandleChart({
                 fontWeight="700"
                 fill="var(--color-brand)"
               >
-                다음 봉
+                다음 칸
               </text>
             </g>
           );
@@ -167,7 +167,7 @@ export function CandleChart({
         <g>
           <line x1={0} y1={y(entryPrice)} x2={W} y2={y(entryPrice)} stroke="var(--color-up)" strokeWidth="1.2" strokeDasharray="5 4" opacity="0.75" />
           <text x={4} y={y(entryPrice) - 5} fontSize="10" fontWeight="700" fill="var(--color-up)" opacity="0.85">
-            내 평단
+            내가 산 값
           </text>
         </g>
       )}
@@ -183,7 +183,7 @@ export function CandleChart({
           fill="var(--color-ink3)"
           opacity="0.75"
         >
-          지나간 구간
+          이미 지나간 부분
         </text>
       )}
 

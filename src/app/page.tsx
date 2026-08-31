@@ -14,9 +14,9 @@ export default function Home() {
           <h1 className="text-[38px] font-bold leading-[1.15] tracking-tight">살껄팔껄!</h1>
         </div>
         <p className="mt-3 text-[15px] leading-relaxed text-ink2">
-          종목도 시기도 가린 차트를 한 봉씩 넘기며 매매해요.
+          차트를 한 칸씩 넘기면서 사고팔아요.
           <br />
-          상대는 아무것도 안 하고 버틴 <b className="font-bold text-ink">존버</b>예요.
+          그냥 사두고 <b className="font-bold text-ink">가만히 있는 것</b>보다 잘하면 이겨요.
         </p>
       </header>
 
@@ -37,8 +37,13 @@ export default function Home() {
       <section className="anim-rise mt-3 rounded-card bg-card p-5" style={{ animationDelay: '150ms' }}>
         <h2 className="text-[15px] font-bold">규칙은 세 개예요</h2>
         <ol className="mt-3 space-y-2.5 text-[14px] leading-relaxed text-ink2">
-          <Rule n={1}>매 턴 <b className="text-up">매수</b> · 관망 · <b className="text-down">매도</b> 중 하나를 골라요</Rule>
-          <Rule n={2}>주문은 <b>다음 봉 시가</b>에 체결돼요</Rule>
+          <Rule n={1}>
+            매 턴 <b className="text-up">매수</b>(사기) · 관망(그대로) ·{' '}
+            <b className="text-down">매도</b>(팔기) 중 하나를 골라요
+          </Rule>
+          <Rule n={2}>
+            지금 누르면 바로 안 돼요. <b>다음 칸이 열릴 때 그 값으로</b> 처리돼요
+          </Rule>
           </ol>
 
         {/*
@@ -57,12 +62,17 @@ export default function Home() {
             3
           </span>
           <span className="text-[14px] leading-relaxed text-ink2">
-            점수는 수익률이 아니라 <b className="font-bold text-ink">존버보다 얼마나 잘했나</b>예요
+            상대는 <b className="font-bold text-ink">처음에 사서 끝까지 안 판 사람</b>이에요.
+            그 사람보다 많이 벌면 이겨요
+            {/* 개념을 먼저 말하고 이름을 나중에 붙인다. 반대로 하면 이름이 벽이 된다 */}
+            <span className="mt-1 block text-[12.5px] text-ink3">
+              이 상대를 <b className="font-semibold text-ink2">존버</b>라고 불러요
+            </span>
           </span>
         </div>
         {/* 규칙이 아니라 완주 동기. 목록에 넣으면 4개가 되어 덜 읽힌다 */}
         <p className="mt-3.5 border-t border-line pt-3 text-[13px] text-ink3">
-          끝나면 어느 종목의 언제였는지 알려드려요.
+          무슨 회사의 언제였는지는 끝나면 알려드려요.
         </p>
         {/*
           규칙(무슨 게임인가)과 화면 설명(어디를 봐야 하나)은 성격이 달라서

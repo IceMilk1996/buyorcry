@@ -63,7 +63,7 @@ export function StatHeader({
           <div className={`mt-1.5 text-[15px] font-semibold ${pnlColor}`}>
             {fmtPct(pnl)}
             <span className="ml-1.5 text-[13px] font-medium text-ink3">
-              {holding ? '보유 중' : '현금'}
+              {holding ? '주식 있음' : '현금'}
             </span>
           </div>
         </div>

@@ -66,7 +66,7 @@ export default async function MyPage() {
         <>
           <section className="mt-2 grid grid-cols-3 gap-2">
             <Stat top={`${c.total}판`} bottom={`오늘의 챌린지 ${c.daily}`} />
-            <Stat top={pct(c.avgAlpha)} bottom="평균 초과수익" tone={c.avgAlpha} />
+            <Stat top={pct(c.avgAlpha)} bottom="존버보다 평균" tone={c.avgAlpha} />
             <Stat top={`${c.beatHold}판`} bottom="존버 이김" />
           </section>
 
@@ -119,7 +119,7 @@ function Row({ e }: { e: HistoryEntry }) {
             </span>
           </span>
           <span className="mt-0.5 truncate text-[12px] text-ink3">
-            {e.from} ~ {e.to} · {e.interval === 'D' ? '일봉' : '주봉'} · 매매 {e.tradeCount}회
+            {e.from} ~ {e.to} · {e.interval === 'D' ? '하루' : '일주일'} 단위 · 사고팔기 {e.tradeCount}번
           </span>
         </span>
         <span className="flex shrink-0 flex-col items-end pl-3">

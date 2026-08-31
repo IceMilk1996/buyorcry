@@ -21,7 +21,7 @@ export async function generateMetadata({
   const pct = `${rec.alpha >= 0 ? '+' : ''}${(rec.alpha * 100).toFixed(1)}%`;
   return {
     title: `존버보다 ${pct} — 살껄팔껄`,
-    description: '종목도 시기도 가린 과거 차트로 매매하고, 존버와 비교당하는 게임.',
+    description: '무슨 회사인지 언제인지 가린 차트로 사고팔고, 그냥 사두고 가만히 있었을 때와 비교당하는 게임.',
   };
 }
 

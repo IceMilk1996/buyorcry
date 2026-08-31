@@ -19,14 +19,14 @@ export default function HowPage() {
       <TopBar title="게임 화면 보는 법" back />
 
       <h1 className="mt-2 text-[24px] font-bold leading-snug tracking-tight">
-        한 봉씩 넘기며
+        한 칸씩 넘기면서
         <br />
         사고팔면 돼요
       </h1>
       <p className="mt-2.5 text-[14px] leading-relaxed text-ink2">
-        30턴 동안 매수 · 관망 · 매도 중 하나를 고릅니다.
+        30턴 동안 사거나, 팔거나, 그대로 두거나 셋 중 하나를 고릅니다.
         <br />
-        끝나면 그냥 들고 있었을 때와 비교해드려요.
+        끝나면 그냥 사두고 가만히 있었을 때와 비교해드려요.
       </p>
 
       <HowScreen />

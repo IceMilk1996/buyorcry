@@ -304,14 +304,14 @@ export function ResultView({
           <span className="ml-2 text-[13px] font-medium text-ink3">{result.symbol}</span>
         </div>
         <div className="mt-0.5 text-[13px] text-ink3">
-          {result.from} ~ {result.to} · {result.interval === 'D' ? '일봉' : '주봉'}
+          {result.from} ~ {result.to} · {result.interval === 'D' ? '한 칸 = 하루' : '한 칸 = 일주일'}
         </div>
 
         <div className="mt-3">
           <CandleChart bars={result.revealCandles} revealCount={revealCount} holdMask={holdMask} />
         </div>
         <p className="mt-1 text-center text-[12px] text-ink3">
-          붉게 칠해진 구간이 실제로 들고 있던 때예요
+          붉게 칠해진 곳이 실제로 주식을 갖고 있던 때예요
         </p>
       </section>
 
