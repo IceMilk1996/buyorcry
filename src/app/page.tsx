@@ -71,12 +71,17 @@ export default function Home() {
         <p className="mt-3.5 border-t border-line pt-3 text-[13px] text-ink3">
           게임이 종료되면 주식명이 공개돼요.
         </p>
+        {/*
+          13px 글자 한 줄로 두니 카드 맨 밑에서 아무도 못 봤다. 버튼 모양으로
+          세운다 — 시작 버튼과 색이 겹치지 않게 연한 배경만 깔아서, 눈에는
+          띄되 '오늘의 챌린지' 와 경쟁하지는 않게 한다.
+        */}
         <Link
           href="/how"
-          className="pressable -mx-2 mt-1.5 flex items-center justify-between rounded-xl px-2 py-2"
+          className="pressable mt-3.5 flex h-[48px] items-center justify-center gap-1.5 rounded-btn bg-brandweak text-[15px] font-bold text-brand"
         >
-          <span className="text-[13px] font-semibold text-brand">게임 방법 자세히 보기</span>
-          <span className="text-[13px] font-bold text-brand">→</span>
+          게임 방법 자세히 보기
+          <span aria-hidden>→</span>
         </Link>
       </section>
 
