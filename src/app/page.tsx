@@ -14,9 +14,9 @@ export default function Home() {
           <h1 className="text-[38px] font-bold leading-[1.15] tracking-tight">살껄팔껄!</h1>
         </div>
         <p className="mt-3 text-[15px] leading-relaxed text-ink2">
-          차트를 한 칸씩 넘기면서 사고팔아요.
+          무슨 회사인지, 언제인지 가려둔 차트예요.
           <br />
-          그냥 사두고 <b className="font-bold text-ink">가만히 있는 것</b>보다 잘하면 이겨요.
+          <b className="font-bold text-ink">오를지 내릴지</b> 맞혀보세요.
         </p>
       </header>
 
@@ -35,47 +35,51 @@ export default function Home() {
       </div>
 
       <section className="anim-rise mt-3 rounded-card bg-card p-5" style={{ animationDelay: '150ms' }}>
-        <h2 className="text-[15px] font-bold">규칙은 세 개예요</h2>
-        <ol className="mt-3 space-y-2.5 text-[14px] leading-relaxed text-ink2">
+        {/*
+          규칙을 기계 동작으로 나열하면(무엇을 누르면 언제 처리되고…) 정작
+          "그래서 내가 뭘 하는 게임인가"를 아무도 말해주지 않는다. 두 줄이면
+          된다 — 무엇을 하는가, 어떻게 채점되는가. 체결 시점 같은 세부는
+          액션바에 상시로 적혀 있고 첫 안내가 짚어주므로 여기서 뺀다.
+        */}
+        <h2 className="text-[15px] font-bold">이렇게 해요</h2>
+        <ol className="mt-3 text-[14px] leading-relaxed text-ink2">
           <Rule n={1}>
-            매 턴 <b className="text-up">매수</b>(사기) · 관망(그대로) ·{' '}
-            <b className="text-down">매도</b>(팔기) 중 하나를 골라요
+            차트를 보고 <b className="font-bold text-ink">오를지 내릴지</b> 예측해서{' '}
+            <b className="text-up">매수</b> · 관망 · <b className="text-down">매도</b> 중 하나를
+            골라요
+            <span className="mt-1 block text-[12.5px] text-ink3">
+              사기 · 그대로 두기 · 팔기예요
+            </span>
           </Rule>
-          <Rule n={2}>
-            지금 누르면 바로 안 돼요. <b>다음 칸이 열릴 때 그 값으로</b> 처리돼요
-          </Rule>
-          </ol>
+        </ol>
 
         {/*
-          3번은 조작법이 아니라 이 게임의 목표다. 1·2번과 같은 무게로 나열하면
-          굵게 처리해도 묻힌다. 번호는 유지해서 '세 개'라는 말은 그대로 맞게 두고,
-          카드로 띄워 위계만 올린다. 민트는 매수(빨강)·매도(파랑)와 의미가 겹치지 않는
-          유일한 색이라 여기 쓴다.
-        */}
-        {/*
+          2번은 조작법이 아니라 이 게임의 채점 방식이다. 1번과 같은 무게로
+          나열하면 굵게 처리해도 묻힌다. 카드로 띄워 위계만 올린다.
+          민트는 매수(빨강)·매도(파랑)와 의미가 겹치지 않는 유일한 색이다.
+
           -mx-3 과 p-3 은 같은 값이어야 한다. 그래야 밴드가 좌우로 12px 나가고
-          안쪽 여백이 그만큼 되밀어서, 3번 숫자가 1·2번과 같은 x에 선다.
-          한쪽만 바꾸면 번호 열이 어긋난다.
+          안쪽 여백이 그만큼 되밀어서, 2번 숫자가 1번과 같은 x에 선다.
         */}
         <div className="-mx-3 mt-2.5 flex gap-2.5 rounded-2xl bg-mintweak p-3">
           <span className="mt-0.5 flex h-[19px] w-[19px] shrink-0 items-center justify-center rounded-full bg-mint text-[11px] font-bold text-white">
-            3
+            2
           </span>
           <span className="text-[14px] leading-relaxed text-ink2">
-            상대는 <b className="font-bold text-ink">처음에 사서 끝까지 안 판 사람</b>이에요.
-            그 사람보다 많이 벌면 이겨요
+            30턴이 끝나면 <b className="font-bold text-ink">그냥 사두고 끝까지 안 판 것</b>과
+            비교해요. 그것보다 많이 벌면 이겨요
             {/* 개념을 먼저 말하고 이름을 나중에 붙인다. 반대로 하면 이름이 벽이 된다 */}
             <span className="mt-1 block text-[12.5px] text-ink3">
               이 상대를 <b className="font-semibold text-ink2">존버</b>라고 불러요
             </span>
           </span>
         </div>
-        {/* 규칙이 아니라 완주 동기. 목록에 넣으면 4개가 되어 덜 읽힌다 */}
+
         <p className="mt-3.5 border-t border-line pt-3 text-[13px] text-ink3">
           무슨 회사의 언제였는지는 끝나면 알려드려요.
         </p>
         {/*
-          규칙(무슨 게임인가)과 화면 설명(어디를 봐야 하나)은 성격이 달라서
+          규칙(무엇을 하는가)과 화면 설명(어디를 봐야 하나)은 성격이 달라서
           카드를 나누지 않고 여기서 링크로만 잇는다. 홈에서 설명을 두 뭉치로
           쌓으면 시작 버튼이 그만큼 밑으로 밀린다.
         */}

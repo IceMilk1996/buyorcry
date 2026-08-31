@@ -24,7 +24,7 @@ export const SCREEN_NOTES: { n: number; title: string; body: string }[] = [
   {
     n: 4,
     title: '다음 칸',
-    body: '지금 고른 게 처리될 자리예요. 어떻게 될지는 아직 아무도 몰라요.',
+    body: '지금 고른 게 처리될 자리예요. 누른 즉시가 아니라 이 칸이 열릴 때 그 값으로 처리돼요. 어떻게 될지는 아직 아무도 몰라요.',
   },
   {
     n: 5,

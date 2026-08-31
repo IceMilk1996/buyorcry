@@ -65,6 +65,13 @@ body {
   font-family: var(--font-sans);
   /* 숫자가 바뀔 때 폭이 흔들리지 않게 — 자산·수익률이 매 턴 갱신된다 */
   font-variant-numeric: tabular-nums;
+  /*
+   * 한글은 기본값(break-all 비슷하게 동작)으로 두면 '관망' 이 '관 / 망' 으로
+   * 잘린다. 어절 단위로 끊어야 읽힌다. 대신 한 단어가 줄보다 길면 넘치므로
+   * 그때만 break-word 로 빠져나간다.
+   */
+  word-break: keep-all;
+  overflow-wrap: break-word;
   overscroll-behavior-y: none;
 }
 

@@ -22,16 +22,14 @@ export function HelpSheet({ onClose, onReplay }: { onClose: () => void; onReplay
 
         <ol className="mt-3 space-y-2.5 text-[14px] leading-relaxed text-ink2">
           <Rule n={1}>
-            매 턴 <b className="font-bold text-up">매수</b>(사기) · 관망(그대로) ·{' '}
-            <b className="font-bold text-down">매도</b>(팔기) 중 하나를 골라요
+            차트를 보고 <b className="font-bold text-ink">오를지 내릴지</b> 예측해서{' '}
+            <b className="font-bold text-up">매수</b> · 관망 ·{' '}
+            <b className="font-bold text-down">매도</b> 중 하나를 골라요 — 사기 · 그대로 두기 ·
+            팔기예요
           </Rule>
           <Rule n={2}>
-            지금 누르면 바로 안 돼요. <b className="font-bold text-ink">다음 칸이 열릴 때 그 값으로</b>{' '}
-            처리돼요. 살 때도 팔 때도 늘 전 재산이에요
-          </Rule>
-          <Rule n={3}>
-            상대는 <b className="font-bold text-ink">처음에 사서 끝까지 안 판 사람</b>이에요. 그 사람보다
-            많이 벌면 이겨요 — 이 상대를 존버라고 불러요
+            30턴이 끝나면 <b className="font-bold text-ink">그냥 사두고 끝까지 안 판 것</b>과
+            비교해요. 그것보다 많이 벌면 이겨요 — 이 상대를 존버라고 불러요
           </Rule>
         </ol>
 
