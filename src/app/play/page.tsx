@@ -1,10 +1,12 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import Link from 'next/link';
-import { Action } from '@/lib/game/types';
+import { Action, FEE_RATE } from '@/lib/game/types';
 import { ActionBar } from '@/components/ActionBar';
-import { FirstTurnHint } from '@/components/FirstTurnHint';
+import { Coach } from '@/components/Coach';
+import { HelpSheet } from '@/components/HelpSheet';
+import { markHintSeen, noSubscribe, readSeenHint, serverSeenHint } from '@/lib/client/hint';
 
 import { Bar, CandleChart } from '@/components/CandleChart';
 import { ActionTrail } from '@/components/ActionTrail';
@@ -36,6 +38,15 @@ export default function PlayPage() {
   const busy = useRef(false);
   /** 마지막 턴 직후 결과 화면으로 넘어가기 전까지 입력을 막는다 */
   const [locked, setLocked] = useState(false);
+
+  /*
+   * 안내는 두 갈래로 열린다 — 처음 온 사람에게 자동으로, 그리고 '?' 를
+   * 눌렀을 때 언제든. 뒤로 나가야만 설명을 볼 수 있던 게 문제였다.
+   */
+  const seenHint = useSyncExternalStore(noSubscribe, readSeenHint, serverSeenHint);
+  const [coachDone, setCoachDone] = useState(false);
+  const [coachManual, setCoachManual] = useState(false);
+  const [helpOpen, setHelpOpen] = useState(false);
 
   const start = useCallback(async () => {
     setPhase('loading');
@@ -182,20 +193,37 @@ export default function PlayPage() {
       />;
   }
 
+  /*
+   * 같은 시점의 존버 수익률. 첫 플레이 봉의 시가에 전량 매수해 그대로 들고
+   * 있었을 때의 평가액이다. 매도 수수료는 아직 빼지 않는다 — 내 수익률도
+   * 청산 전 평가액이라, 그래야 두 숫자가 같은 조건에서 비교된다.
+   *
+   * 화면에 이미 그려져 있는 캔들만으로 계산되므로 아무것도 미리 알려주지 않는다.
+   */
+  const holdPnl =
+    bars.length > revealCount
+      ? (1 - FEE_RATE) * (bars[bars.length - 1].c / bars[revealCount].o) - 1
+      : 0;
+
+  const coachOpen =
+    phase === 'playing' && !coachDone && (coachManual || (!seenHint && turn === 0));
+
   return (
     /* 스크롤 없이 한 화면에. 차트가 남는 세로 공간을 전부 가져간다 */
     <div className="flex h-dvh flex-col overflow-hidden">
       <StatHeader
         equity={equity}
         pnl={equity / INITIAL - 1}
+        holdPnl={holdPnl}
         turn={turn}
         totalTurns={totalTurns}
         holding={holding}
+        onHelp={() => setHelpOpen(true)}
       />
 
       {/* min-h-0 이 없으면 flex 자식이 내용 높이 밑으로 안 줄어든다 */}
       <div className="mt-3 min-h-0 flex-1 px-4">
-        <div className="h-full rounded-card bg-card px-2 py-3">
+        <div data-coach="chart" className="h-full rounded-card bg-card px-2 py-3">
           <CandleChart
             bars={bars}
             revealCount={revealCount}
@@ -211,13 +239,35 @@ export default function PlayPage() {
         <ActionTrail actions={actions} total={totalTurns} />
       </div>
 
-      <ActionBar holding={holding} disabled={locked || phase !== 'playing'} onAction={(a) => void act(a)} />
+      {/* 안내가 여기를 밝힐 때 스크림이 비쳐 보이지 않게 불투명한 바닥을 깐다 */}
+      <div data-coach="actions" className="bg-bg">
+        <ActionBar
+          holding={holding}
+          disabled={locked || phase !== 'playing'}
+          onAction={(a) => void act(a)}
+        />
+      </div>
 
-      {/*
-        차트가 다 그려진 뒤에 올린다. 이어하기로 돌아온 판(turn > 0)에는
-        띄우지 않는다 — 하던 사람한테 "처음이시죠?"는 실례다.
-      */}
-      {turn === 0 && <FirstTurnHint />}
+      {helpOpen && (
+        <HelpSheet
+          onClose={() => setHelpOpen(false)}
+          onReplay={() => {
+            setHelpOpen(false);
+            setCoachDone(false);
+            setCoachManual(true);
+          }}
+        />
+      )}
+
+      {coachOpen && (
+        <Coach
+          onDone={() => {
+            markHintSeen();
+            setCoachDone(true);
+            setCoachManual(false);
+          }}
+        />
+      )}
     </div>
   );
 }

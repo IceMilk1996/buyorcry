@@ -127,3 +127,14 @@ body {
 
 /* 스크롤바 정리 */
 ::-webkit-scrollbar { width: 0; height: 0; }
+
+/* ── 안내 스포트라이트 ────────────────────────────────
+   한 곳만 밝히고 나머지는 어둡게 덮는다. 밝힌 요소는 스크림 위로 올라오는데,
+   배경이 없으면 어두운 스크림이 그대로 비쳐서 글자가 떠 있는 것처럼 보인다.
+   그래서 같은 색 테두리를 둘러 '오려낸 구멍'처럼 보이게 한다. */
+.coach-lit {
+  position: relative;
+  z-index: 60;
+  border-radius: 20px;
+  box-shadow: 0 0 0 6px var(--color-bg);
+}

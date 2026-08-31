@@ -4,7 +4,8 @@ import { ActionBar } from '@/components/ActionBar';
 import { ActionTrail } from '@/components/ActionTrail';
 import { Bar, CandleChart } from '@/components/CandleChart';
 import { StatHeader } from '@/components/StatHeader';
-import { Action } from '@/lib/game/types';
+import { SCREEN_NOTES } from '@/components/gameNotes';
+import { Action, FEE_RATE } from '@/lib/game/types';
 
 /**
  * 설명용으로 멈춰 세운 플레이 화면.
@@ -56,25 +57,21 @@ const ACTIONS: Action[] = ['HOLD', 'BUY', 'HOLD', 'HOLD', 'HOLD', 'HOLD'];
 const HOLD_MASK = [false, true, true, true, true, true];
 /** 100만으로 77.5에 전량 매수해 79.8까지 들고 온 상태 (수수료 0.05% 반영) */
 const EQUITY = 1_029_162;
+/** 같은 구간을 존버했을 때. 플레이 화면과 같은 식으로 계산한다 */
+const HOLD_PNL = (1 - FEE_RATE) * (DEMO[DEMO.length - 1].c / DEMO[REVEAL].o) - 1;
 
 /** 프레임 안에 찍는 번호 핀. 좌표는 프레임 크기에 대한 % */
 const PINS: { n: number; x: number; y: number }[] = [
-  { n: 1, x: 64, y: 8.5 },
-  { n: 2, x: 12, y: 54 },
-  { n: 3, x: 53, y: 55 },
-  { n: 4, x: 21, y: 37 },
-  { n: 5, x: 25, y: 78 },
-  { n: 6, x: 34, y: 92 },
+  { n: 1, x: 64, y: 7 },
+  { n: 2, x: 62, y: 21 },
+  { n: 3, x: 13, y: 55 },
+  { n: 4, x: 53, y: 45 },
+  { n: 5, x: 21, y: 42 },
+  { n: 6, x: 25, y: 78 },
+  { n: 7, x: 34, y: 92 },
 ];
 
-const NOTES: { n: number; title: string; body: string }[] = [
-  { n: 1, title: '내 자산', body: '100만으로 시작해요. 밑에 수익률과 지금 현금인지 보유 중인지가 같이 나와요.' },
-  { n: 2, title: '지나간 구간', body: '판이 시작되기 전 이미 지나간 구간이에요. 흐리게 칠해뒀고, 여기선 매매할 수 없어요.' },
-  { n: 3, title: '다음 봉', body: '지금 고른 주문이 체결될 자리예요. 이 봉이 어떻게 생겼는지는 아직 아무도 몰라요.' },
-  { n: 4, title: '내 평단', body: '보유 중일 때만 나와요. 이 선보다 위면 이익, 아래면 손실이에요.' },
-  { n: 5, title: '내 행동', body: '지금까지 뭘 했는지가 한 줄로 남아요. 빨강이 매수, 파랑이 매도, 회색이 관망이에요.' },
-  { n: 6, title: '매수 · 관망 · 매도', body: '매수와 매도는 늘 전량이에요. 보유 중일 땐 매수가, 현금일 땐 매도가 꺼져 있어요.' },
-];
+
 
 export function HowScreen() {
   return (
@@ -94,6 +91,7 @@ export function HowScreen() {
             pnl={EQUITY / 1_000_000 - 1}
             turn={ACTIONS.length}
             totalTurns={TOTAL}
+            holdPnl={HOLD_PNL}
             holding
           />
 
@@ -129,7 +127,7 @@ export function HowScreen() {
       </div>
 
       <ol className="mt-5 space-y-3.5">
-        {NOTES.map((s) => (
+        {SCREEN_NOTES.map((s) => (
           <li key={s.n} className="flex gap-2.5">
             <span className="mt-[3px] flex h-[20px] w-[20px] shrink-0 items-center justify-center rounded-full bg-brand text-[11px] font-bold text-white">
               {s.n}
