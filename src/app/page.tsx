@@ -77,7 +77,7 @@ export default function Home() {
         </div>
 
         <p className="mt-3.5 border-t border-line pt-3 text-[13px] text-ink3">
-          무슨 회사의 언제였는지는 끝나면 알려드려요.
+          게임이 종료되면 주식명이 공개돼요.
         </p>
         {/*
           규칙(무엇을 하는가)과 화면 설명(어디를 봐야 하나)은 성격이 달라서
