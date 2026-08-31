@@ -28,13 +28,14 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="mt-8 grid grid-cols-3 gap-2">
-        <Fact top="100만" bottom="시작 자금" />
-        <Fact top="30턴" bottom="한 판 2분" />
-        <Fact top="0.05%" bottom="거래 수수료" />
-      </div>
-
-      <section className="anim-rise mt-3 rounded-card bg-card p-5" style={{ animationDelay: '150ms' }}>
+      {/*
+        숫자 카드(100만 · 30턴 · 0.05%)를 뺐다. 셋 다 여기 있을 이유가 없다 —
+        시작 자금은 게임 화면 맨 위에 크게 떠 있고, 30턴은 아래 2번에 이미
+        적혀 있고, 수수료는 처음 온 사람이 알 필요가 없다(결과 화면에
+        '수수료 포함'이 적힌다). 첫 화면에서 설명보다 위에 숫자가 있으면
+        "이게 뭐 하는 건지"보다 "얼마짜리인지"를 먼저 읽게 된다.
+      */}
+      <section className="anim-rise mt-8 rounded-card bg-card p-5" style={{ animationDelay: '150ms' }}>
         {/*
           규칙을 기계 동작으로 나열하면(무엇을 누르면 언제 처리되고…) 정작
           "그래서 내가 뭘 하는 게임인가"를 아무도 말해주지 않는다. 두 줄이면
@@ -101,15 +102,6 @@ export default function Home() {
         실제 과거 시세로 만든 게임이에요. 투자 조언이 아니에요.
       </p>
     </main>
-  );
-}
-
-function Fact({ top, bottom }: { top: string; bottom: string }) {
-  return (
-    <div className="rounded-2xl bg-card px-3 py-3.5 text-center">
-      <div className="text-[17px] font-bold tracking-tight">{top}</div>
-      <div className="mt-0.5 text-[11px] font-medium text-ink3">{bottom}</div>
-    </div>
   );
 }
 
