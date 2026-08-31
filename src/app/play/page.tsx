@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from '
 import Link from 'next/link';
 import { Action, FEE_RATE } from '@/lib/game/types';
 import { ActionBar } from '@/components/ActionBar';
-import { Coach } from '@/components/Coach';
+import { Tour } from '@/components/Tour';
 import { HelpSheet } from '@/components/HelpSheet';
 import { markHintSeen, noSubscribe, readSeenHint, serverSeenHint } from '@/lib/client/hint';
 
@@ -260,7 +260,7 @@ export default function PlayPage() {
       )}
 
       {coachOpen && (
-        <Coach
+        <Tour
           onDone={() => {
             markHintSeen();
             setCoachDone(true);

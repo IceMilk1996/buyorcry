@@ -129,7 +129,8 @@ export function CandleChart({
           const mx = Math.min(bars.length * slot + slot / 2 - mw / 2, W - mw);
           const top = 24;
           return (
-            <g>
+            /* data-coach: 첫 안내가 이 자리를 가리킨다 */
+            <g data-coach="next">
               <rect x={mx} y={top} width={mw} height={H - top - 10} fill="var(--color-brand)" opacity="0.11" rx="5" />
               <rect
                 x={mx}
