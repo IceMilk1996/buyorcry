@@ -15,9 +15,7 @@ export default function Home() {
           <h1 className="text-[38px] font-bold leading-[1.15] tracking-tight">살껄팔껄!</h1>
         </div>
         <p className="mt-3 text-[15px] leading-relaxed text-ink2">
-          무슨 회사인지, 언제인지 가려둔 차트예요.
-          <br />
-          <b className="font-bold text-ink">오를지 내릴지</b> 맞혀보세요.
+          종목을 가린 차트의 <b className="font-bold text-ink">주가를 예측</b>하여 맞혀보세요.
         </p>
       </header>
 
@@ -55,18 +53,18 @@ export default function Home() {
           <p className="text-[14px] leading-relaxed text-ink2">
             차트를 보고 <b className="font-bold text-ink">오를지 내릴지</b> 예측해서{' '}
             <b className="text-up">매수</b> · 관망 · <b className="text-down">매도</b>를 골라요
-            <span className="mt-0.5 block text-[12.5px] text-ink3">사기 · 그대로 두기 · 팔기예요</span>
           </p>
         </div>
 
-        {/* -mx-3 과 p-3 은 같은 값이어야 좌우로 밴드만 나가고 안쪽 줄이 안 어긋난다 */}
-        <div className="-mx-3 mt-3 flex items-center gap-3 rounded-2xl bg-mintweak p-3">
+        {/*
+          두 줄을 같은 모양으로 둔다. 예전에는 두 번째만 민트 밴드로 띄워
+          "이게 채점 기준" 이라는 위계를 줬는데, 줄이 둘뿐이면 그 위계가
+          도움이 되기보다 화면만 얼룩덜룩해진다.
+        */}
+        <div className="mt-3 flex items-center gap-3">
           <CompareIllust className="h-[60px] w-[94px] shrink-0" />
           <p className="text-[14px] leading-relaxed text-ink2">
-            30턴이 끝나면 <b className="font-bold text-ink">그냥 사두고 끝까지 안 판 것</b>과 비교해요
-            <span className="mt-0.5 block text-[12.5px] text-ink3">
-              이 상대를 <b className="font-semibold text-ink2">존버</b>라고 불러요
-            </span>
+            30턴 종료 후 <b className="font-bold text-ink">존버</b>했을 경우와 비교해요
           </p>
         </div>
 

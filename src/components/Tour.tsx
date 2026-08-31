@@ -91,7 +91,12 @@ export function Tour({ onDone }: { onDone: () => void }) {
 
   return (
     <div
-      className="fixed inset-0 z-50 bg-black/72"
+      /*
+       * 너무 어두우면 정작 가리키는 대상이 안 보인다. 이름표만 남고 화면이
+       * 사라지면 "무엇을 가리키는지" 를 알 수 없어서 안내의 의미가 없다.
+       * 대신 이름표는 그림자를 진하게 줘서 밝은 배경 위에서도 읽히게 한다.
+       */
+      className="fixed inset-0 z-50 bg-black/45"
       onClick={onDone}
       role="button"
       tabIndex={0}
@@ -113,7 +118,7 @@ export function Tour({ onDone }: { onDone: () => void }) {
             <p
               key={note.target}
               style={{ ...labelStyle(note, r, vp), transform: `rotate(${note.tilt ?? 0}deg)` }}
-              className="absolute text-[14px] font-bold leading-snug text-butter drop-shadow-[0_1px_6px_rgba(0,0,0,0.6)]"
+              className="absolute text-[14px] font-bold leading-snug text-butter [text-shadow:0_1px_2px_rgba(0,0,0,0.95),0_0_10px_rgba(0,0,0,0.85)]"
             >
               {note.lines.map((l, i) => (
                 <span key={i} className="block">
