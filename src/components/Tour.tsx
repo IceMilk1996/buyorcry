@@ -43,20 +43,20 @@ const NOTES: Note[] = [
     target: 'next',
     side: 'right',
     align: 'left',
-    lines: ['여기가 다음 칸!', '고른 게 여기서 처리돼요'],
+    lines: ['여기가 다음 칸이에요', '고른 게 여기서 처리돼요'],
     tilt: -1,
   },
   {
     target: 'actions',
     side: 'above',
     align: 'center',
-    lines: ['오를 것 같으면 매수,', '내릴 것 같으면 매도'],
+    lines: ['오를 것 같으면 매수,', '내릴 것 같으면 매도를 눌러요'],
   },
   {
     target: 'help',
     side: 'below',
     align: 'right',
-    lines: ['막히면 여기'],
+    lines: ['막히면 여기를 눌러요'],
     tilt: 1.5,
   },
 ];
@@ -119,7 +119,7 @@ export function Tour({ onDone }: { onDone: () => void }) {
             <p
               key={note.target}
               style={{ ...labelStyle(note, r, vp), transform: `rotate(${note.tilt ?? 0}deg)` }}
-              className="absolute text-[14px] font-bold leading-snug text-butter [text-shadow:0_1px_2px_rgba(0,0,0,0.35),0_0_8px_rgba(0,0,0,0.28)]"
+              className="absolute text-[13.5px] font-semibold leading-snug text-[#ffe9a8] [text-shadow:0_1px_2px_rgba(0,0,0,0.35),0_0_8px_rgba(0,0,0,0.28)]"
             >
               {note.lines.map((l, i) => (
                 <span key={i} className="block">
@@ -161,7 +161,11 @@ function labelStyle(note: Note, r: DOMRect, vp: { w: number; h: number }): React
 
 /** 이름표에서 대상으로 휘어 들어가는 짧은 화살표 */
 function Arrow({ note, r }: { note: Note; r: DOMRect }) {
-  const C = 'var(--color-butter)';
+  /*
+   * 이름표보다 화살표를 조금 진하게 둔다. 글자는 면이라 옅어도 읽히지만
+   * 화살표는 2px 선이라 같이 낮추면 사라진다.
+   */
+  const C = '#f2c94c';
 
   if (note.side === 'right') {
     const y = r.top + r.height / 2;
