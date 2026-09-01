@@ -28,6 +28,15 @@ export default function Home() {
         </p>
       </header>
 
+      {/*
+        남는 세로 공간을 한자리에 몰지 않고 위아래로 나눈다.
+        전에는 설명과 시작 버튼 사이에만 빈 칸이 있어서, 큰 화면(844px)에서는
+        그 틈이 153px 까지 벌어져 둘이 떨어져 보였다. 작은 화면(667px)에서는
+        원래 0 이라 문제가 없었다 — 화면이 클수록 티가 나는 종류의 구멍이다.
+        아래쪽을 더 크게 잡아서 시작 버튼은 계속 엄지 쪽에 남긴다.
+      */}
+      <div className="flex-[0.85]" />
+
       {/* 캐릭터는 분위기 담당이라 자리를 많이 쓰지 않는다 */}
       <div className="anim-pop mt-6 flex justify-center" style={{ animationDelay: '80ms' }}>
         <div className="flex items-end gap-3.5">
