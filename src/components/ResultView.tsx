@@ -221,7 +221,7 @@ export function ResultView({
             </span>
             <span className="text-[16px] font-semibold text-ink2">등</span>
             {standing.percentile !== null && (
-              <span className="ml-1 text-[15px] font-bold text-brand">
+              <span className="ml-1 text-[15px] font-bold text-accent">
                 상위 {standing.percentile}%
               </span>
             )}
@@ -250,7 +250,7 @@ export function ResultView({
                   </span>
                   <span
                     className={`min-w-0 flex-1 truncate text-[14px] ${
-                      r.isMe ? 'font-bold text-brand' : 'text-ink2'
+                      r.isMe ? 'font-bold text-accent' : 'text-ink2'
                     }`}
                   >
                     {r.nick}

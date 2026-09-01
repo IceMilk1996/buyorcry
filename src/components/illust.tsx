@@ -13,7 +13,7 @@
 const UP = 'var(--color-up)';
 const DOWN = 'var(--color-down)';
 const INK3 = 'var(--color-ink3)';
-const BRAND = 'var(--color-brand)';
+const BRAND = 'var(--color-accent)';
 const LINE = 'var(--color-line)';
 const MINT = 'var(--color-mint)';
 

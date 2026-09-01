@@ -78,7 +78,7 @@ export default function Home() {
         */}
         <Link
           href="/how"
-          className="pressable mt-3.5 flex h-[48px] items-center justify-center gap-1.5 rounded-btn bg-brandweak text-[15px] font-bold text-brand"
+          className="pressable mt-3.5 flex h-[48px] items-center justify-center gap-1.5 rounded-btn bg-brandweak text-[15px] font-bold text-accent"
         >
           게임 방법 자세히 보기
           <span aria-hidden>→</span>

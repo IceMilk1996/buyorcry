@@ -131,14 +131,14 @@ export function CandleChart({
           return (
             /* data-coach: 첫 안내가 이 자리를 가리킨다 */
             <g data-coach="next">
-              <rect x={mx} y={top} width={mw} height={H - top - 10} fill="var(--color-brand)" opacity="0.11" rx="5" />
+              <rect x={mx} y={top} width={mw} height={H - top - 10} fill="var(--color-accent)" opacity="0.11" rx="5" />
               <rect
                 x={mx}
                 y={top}
                 width={mw}
                 height={H - top - 10}
                 fill="none"
-                stroke="var(--color-brand)"
+                stroke="var(--color-accent)"
                 strokeWidth="1.2"
                 strokeDasharray="3 3"
                 opacity="0.75"
@@ -147,7 +147,7 @@ export function CandleChart({
               {/* 아래를 가리키는 꼭지 — 여기다, 라는 신호 */}
               <path
                 d={`M${mx + mw / 2 - 4} ${top - 6} L${mx + mw / 2 + 4} ${top - 6} L${mx + mw / 2} ${top - 1} Z`}
-                fill="var(--color-brand)"
+                fill="var(--color-accent)"
               />
               <text
                 x={Math.min(Math.max(mx + mw / 2, 16), W - 16)}
@@ -155,7 +155,7 @@ export function CandleChart({
                 textAnchor="middle"
                 fontSize="11"
                 fontWeight="700"
-                fill="var(--color-brand)"
+                fill="var(--color-accent)"
               >
                 다음 칸
               </text>

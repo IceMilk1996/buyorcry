@@ -33,7 +33,7 @@ export function ActionBar({
       className="shrink-0 border-t border-line bg-card/85 px-4 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur-xl"
     >
       <p className="mb-2 text-center text-[12px] font-medium text-ink3">
-        지금 고른 건 <span className="font-bold text-brand">다음 칸</span>이 열릴 때 처리돼요
+        지금 고른 건 <span className="font-bold text-accent">다음 칸</span>이 열릴 때 처리돼요
       </p>
       <div className="flex gap-2">
         <Btn

@@ -51,7 +51,7 @@ export function NickEditor({ nick }: { nick: string | null }) {
             {nick ?? '아직 안 정했어요'}
           </span>
         </span>
-        <span className="text-[13px] font-bold text-brand">{nick ? '바꾸기' : '정하기'}</span>
+        <span className="text-[13px] font-bold text-accent">{nick ? '바꾸기' : '정하기'}</span>
       </button>
     );
   }

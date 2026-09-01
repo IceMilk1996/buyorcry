@@ -113,7 +113,7 @@ export function ModeChoice() {
               </span>
             </p>
             {me.today.shareId && (
-              <span className="text-[13px] font-bold text-brand">결과 다시 보기 →</span>
+              <span className="text-[13px] font-bold text-accent">결과 다시 보기 →</span>
             )}
           </div>
         </Card>

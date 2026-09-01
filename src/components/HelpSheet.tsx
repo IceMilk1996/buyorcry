@@ -67,7 +67,7 @@ export function HelpSheet({ onClose, onReplay }: { onClose: () => void; onReplay
 function Rule({ n, children }: { n: number; children: React.ReactNode }) {
   return (
     <li className="flex gap-2.5">
-      <span className="mt-0.5 flex h-[19px] w-[19px] shrink-0 items-center justify-center rounded-full bg-brandweak text-[11px] font-bold text-brand">
+      <span className="mt-0.5 flex h-[19px] w-[19px] shrink-0 items-center justify-center rounded-full bg-brandweak text-[11px] font-bold text-accent">
         {n}
       </span>
       <span>{children}</span>
