@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { Logo } from './Logo';
 
 /**
  * 상단바와 메뉴.
@@ -9,7 +10,19 @@ import Link from 'next/link';
  * 플레이 화면에는 넣지 않는다 — 거기는 스크롤 없이 한 화면에 들어가야 해서
  * 세로 공간을 한 줄도 더 쓸 수 없다(기획서 8장).
  */
-export function TopBar({ title, back }: { title?: string; back?: boolean }) {
+export function TopBar({
+  title,
+  back,
+  brand,
+  menu = true,
+}: {
+  title?: string;
+  back?: boolean;
+  /** 홈처럼 왼쪽에 로고와 이름을 세울 때 */
+  brand?: boolean;
+  /** 서브페이지에는 햄버거를 두지 않는다. 거기서 갈 곳은 뒤로뿐이다 */
+  menu?: boolean;
+}) {
   const [open, setOpen] = useState(false);
   const [user, setUser] = useState<{ id: string } | null>(null);
   const [loginReady, setLoginReady] = useState(false);
@@ -64,9 +77,16 @@ export function TopBar({ title, back }: { title?: string; back?: boolean }) {
             <span className="text-[17px] font-bold leading-none text-ink2">←</span>
             <span className="text-[15px] font-bold text-ink2">{title ?? '홈'}</span>
           </Link>
+        ) : brand ? (
+          /* 큰 제목은 아래에 따로 있다. 여기서는 어느 앱인지만 알려준다 */
+          <span className="flex items-center gap-1.5">
+            <Logo size={20} className="text-mint" />
+            <span className="text-[15px] font-bold tracking-tight">살껄팔껄</span>
+          </span>
         ) : (
           <span className="text-[15px] font-bold text-ink2">{title ?? ''}</span>
         )}
+        {menu && (
         <button
           type="button"
           aria-label="메뉴"
@@ -79,6 +99,7 @@ export function TopBar({ title, back }: { title?: string; back?: boolean }) {
             <Bar />
           </span>
         </button>
+        )}
       </div>
 
       {open && (

@@ -47,6 +47,12 @@
   --color-mint: #00c9a7;
   --color-mintweak: #e3f9f4;
   --color-butter: #ffd233;
+  /*
+   * 주의·규칙 전용. butter 는 도형을 채우는 색이라 밝은 배경 위 글씨로는
+   * 1.6:1 밖에 안 나온다. 글씨용으로 충분히 진한 앰버를 따로 둔다(5.2:1).
+   */
+  --color-warn: #8a6100;
+  --color-warnweak: #fff6d9;
 
   --radius-card: 24px;
   --radius-btn: 16px;
@@ -71,6 +77,8 @@
     --color-upweak: #3a2126;
     --color-downweak: #1c2c44;
     --color-mintweak: #14322d;
+    --color-warn: #ffd98f;
+    --color-warnweak: #33290b;
   }
 }
 

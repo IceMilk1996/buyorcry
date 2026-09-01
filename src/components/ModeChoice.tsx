@@ -68,18 +68,23 @@ export function ModeChoice() {
     return () => clearInterval(t);
   }, [load]);
 
+  /*
+   * '둘러보기' 가 아니라 '연습 게임' 이다. 실제로는 무제한으로 할 수 있는
+   * 판인데 구경하는 것처럼 들려서, 하고 싶은 사람이 안 눌렀다.
+   * 채워진 버튼이 아니라 테두리만 둬서 오늘의 챌린지와 위계를 나눈다.
+   */
   const endless = (
     <Link
       href="/play?mode=endless"
-      className="pressable flex items-center justify-between rounded-btn bg-card px-5 py-4"
+      className="pressable flex min-h-[54px] items-center justify-between gap-3 rounded-btn border border-line px-[18px] py-3"
     >
-      <span className="flex flex-col items-start">
-        <span className="text-[16px] font-bold text-ink">
-          {me?.user ? '무한 모드' : '로그인 없이 둘러보기'}
+      <span className="flex flex-col items-start gap-0.5">
+        <span className="text-[15px] font-bold tracking-tight text-ink">연습 게임</span>
+        <span className="text-[11.5px] font-semibold text-ink3">
+          기록에 안 남아요 · 아무 때나, 몇 판이든
         </span>
-        <span className="mt-0.5 text-[12px] font-medium text-ink3">아무 때나, 몇 판이든</span>
       </span>
-      <span className="text-[18px] font-bold text-ink3">→</span>
+      <span className="shrink-0 text-[17px] font-bold text-ink3">→</span>
     </Link>
   );
 
@@ -133,17 +138,17 @@ export function ModeChoice() {
   const dailyCard = (onClick?: () => void) => {
     const inner = (
       <>
-        <span className="flex flex-col items-start">
-          <span className="text-[17px] font-bold">오늘의 챌린지</span>
-          <span className="mt-0.5 text-[12px] font-medium opacity-80">
+        <span className="flex flex-col items-start gap-[3px]">
+          <span className="text-[17px] font-extrabold tracking-tight">오늘의 챌린지 시작</span>
+          <span className="text-[11.5px] font-semibold opacity-75">
             모두 같은 차트 · 하루 한 판
           </span>
         </span>
-        <span className="text-[18px] font-bold opacity-70">→</span>
+        <span className="shrink-0 text-[18px] font-bold opacity-80">→</span>
       </>
     );
     const cls =
-      'pressable flex w-full items-center justify-between rounded-btn bg-brand px-5 py-4 text-left text-white';
+      'pressable flex min-h-[62px] w-full items-center justify-between gap-3 rounded-btn bg-brand px-[18px] py-3.5 text-left text-white';
     return onClick ? (
       <button type="button" onClick={onClick} className={cls}>
         {inner}
