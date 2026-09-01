@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { TopBar } from '@/components/TopBar';
-import { AllInIllust, PredictIllust } from '@/components/illust';
+import { PredictIllust } from '@/components/illust';
 
 export const metadata = { title: '게임 방법 — 살껄팔껄' };
 
@@ -57,12 +57,15 @@ export default function HowPage() {
           </div>
         </Step>
 
-        <Step n={3} title="사고팔 땐 언제나 전 재산">
-          <AllInIllust className="h-auto w-full max-w-[240px]" />
-          <Note>
-            절반만 사거나 파는 건 없어요.
-            <br />한 번 고르면 전부 옮겨가요.
-          </Note>
+        {/*
+          여기만 그림이 없다. 현금과 주식 상자를 화살표로 잇는 그림을 그려
+          봤는데, 이건 볼 게 없는 규칙이라 그림이 설명을 돕지 못하고 자리만
+          차지했다. 한 문장이면 끝나는 내용은 한 문장으로 둔다.
+        */}
+        <Step n={3} title="사고팔 땐 언제나 전 재산" bare>
+          <p className="text-[14px] leading-relaxed text-ink2">
+            절반만 사거나 파는 건 없어요. 한 번 고르면 전부 옮겨가요.
+          </p>
         </Step>
 
         <Step n={4} title="30턴 뒤, 안 팔고 버틴 결과와 비교">
@@ -89,7 +92,18 @@ export default function HowPage() {
   );
 }
 
-function Step({ n, title, children }: { n: number; title: string; children: React.ReactNode }) {
+function Step({
+  n,
+  title,
+  children,
+  bare,
+}: {
+  n: number;
+  title: string;
+  children: React.ReactNode;
+  /** 그림이 없는 단계. 빈 회색 판이 남지 않게 안쪽 상자를 통째로 뺀다 */
+  bare?: boolean;
+}) {
   return (
     <li className="rounded-card bg-card p-5">
       <div className="flex items-center gap-2.5">
@@ -98,9 +112,13 @@ function Step({ n, title, children }: { n: number; title: string; children: Reac
         </span>
         <h2 className="text-[16.5px] font-bold leading-snug tracking-tight">{title}</h2>
       </div>
-      <div className="mt-4 flex flex-col items-center gap-3 rounded-2xl bg-bg px-4 py-4">
-        {children}
-      </div>
+      {bare ? (
+        <div className="mt-2.5">{children}</div>
+      ) : (
+        <div className="mt-4 flex flex-col items-center gap-3 rounded-2xl bg-bg px-4 py-4">
+          {children}
+        </div>
+      )}
     </li>
   );
 }

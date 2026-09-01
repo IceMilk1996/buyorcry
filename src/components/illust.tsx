@@ -67,27 +67,6 @@ export function PredictIllust({ className }: P) {
   );
 }
 
-/** ③ 현금과 주식이 통째로 오간다 — 절반은 없다 */
-export function AllInIllust({ className }: P) {
-  return (
-    <svg viewBox="0 0 100 64" className={className} role="img" aria-label="현금 전부가 주식으로, 주식 전부가 현금으로">
-      <rect x="4" y="18" width="30" height="28" rx="8" fill="var(--color-warnweak)" stroke="var(--color-warn)" strokeWidth="1.2" />
-      <text x="19" y="36" textAnchor="middle" fontSize="10" fontWeight="800" fill="var(--color-warn)">
-        현금
-      </text>
-      <rect x="66" y="18" width="30" height="28" rx="8" fill="var(--color-warnweak)" stroke="var(--color-warn)" strokeWidth="1.2" />
-      <text x="81" y="36" textAnchor="middle" fontSize="10" fontWeight="800" fill="var(--color-warn)">
-        주식
-      </text>
-      {/* 양방향 — 살 때도 팔 때도 전부다 */}
-      <path d="M40 26 h20" stroke="var(--color-warn)" strokeWidth="2" strokeLinecap="round" />
-      <path d="M60 26 l-5 -3.2 l0 6.4 z" fill="var(--color-warn)" />
-      <path d="M60 38 h-20" stroke="var(--color-warn)" strokeWidth="2" strokeLinecap="round" />
-      <path d="M40 38 l5 -3.2 l0 6.4 z" fill="var(--color-warn)" />
-    </svg>
-  );
-}
-
 /** ④ 30턴 뒤, 나와 존버를 나란히 세운다 */
 export function CompareIllust({ className, labels = true }: P & { labels?: boolean }) {
   return (
