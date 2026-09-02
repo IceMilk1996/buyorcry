@@ -2,6 +2,9 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { NickField } from './NickField';
+import { useNickCheck } from '@/lib/client/useNickCheck';
+import { nickProblem } from '@/lib/nick';
 
 /**
  * 순위표에 쓸 이름.
@@ -16,10 +19,11 @@ export function NickEditor({ nick }: { nick: string | null }) {
   const [value, setValue] = useState(nick ?? '');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
+  const check = useNickCheck(value);
 
   async function save() {
     const v = value.trim();
-    if (!v || busy) return;
+    if (busy || nickProblem(v)) return;
     setBusy(true);
     setError('');
     try {
@@ -59,37 +63,40 @@ export function NickEditor({ nick }: { nick: string | null }) {
   return (
     <div className="rounded-btn bg-card px-4 py-3.5">
       <label className="text-[12px] font-medium text-ink3">순위표에 쓸 이름</label>
-      <div className="mt-2 flex gap-2">
-        <input
+      <div className="mt-2">
+        <NickField
           autoFocus
+          check={check}
           value={value}
-          maxLength={12}
-          onChange={(e) => setValue(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && void save()}
-          placeholder="12자까지"
-          className="h-[46px] min-w-0 flex-1 rounded-btn bg-bg px-3.5 text-[15px] font-semibold outline-none"
+          onChange={(v) => {
+            setValue(v);
+            setError('');
+          }}
+          onEnter={() => void save()}
+          error={error}
         />
+      </div>
+      <div className="flex gap-2">
+        <button
+          type="button"
+          onClick={() => {
+            setEditing(false);
+            setValue(nick ?? '');
+            setError('');
+          }}
+          className="pressable h-[46px] flex-1 rounded-btn bg-bg text-[15px] font-bold text-ink2"
+        >
+          취소
+        </button>
         <button
           type="button"
           onClick={() => void save()}
-          disabled={!value.trim() || busy}
-          className="pressable h-[46px] shrink-0 rounded-btn bg-brand px-5 text-[15px] font-bold text-onbrand disabled:bg-bg disabled:text-ink3"
+          disabled={busy || Boolean(nickProblem(value)) || check.state === 'taken'}
+          className="pressable h-[46px] flex-1 rounded-btn bg-brand text-[15px] font-bold text-onbrand disabled:bg-bg disabled:text-ink3"
         >
-          저장
+          {busy ? '저장 중…' : '저장'}
         </button>
       </div>
-      {error && <p className="mt-2 text-[12px] text-up">{error}</p>}
-      <button
-        type="button"
-        onClick={() => {
-          setEditing(false);
-          setValue(nick ?? '');
-          setError('');
-        }}
-        className="mt-2 text-[12px] font-medium text-ink3"
-      >
-        취소
-      </button>
     </div>
   );
 }

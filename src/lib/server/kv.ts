@@ -111,6 +111,33 @@ export async function kvSet(key: string, val: string, ttlSec?: number): Promise<
   mem.set(key, { v: val, exp: memExp(ttlSec) });
 }
 
+/**
+ * 아무도 안 쓰고 있을 때만 쓴다. 성공하면 true.
+ *
+ * 이름 선점에 쓴다. 읽고 나서 쓰면 그 사이에 다른 사람이 먼저 쓸 수 있다 —
+ * 흔한 일은 아니지만 한 번 생기면 같은 이름을 가진 두 사람이 남고, 되돌릴
+ * 방법이 없다. 검사와 저장이 한 번에 일어나야 한다.
+ */
+export async function kvSetNX(key: string, val: string): Promise<boolean> {
+  assertUsable();
+  if (kvRemote()) {
+    const r = (await send([['SET', key, val, 'NX']]))[0];
+    return r !== null;
+  }
+  if (memGet(key)) return false;
+  mem.set(key, { v: val, exp: 0 });
+  return true;
+}
+
+export async function kvDel(key: string): Promise<void> {
+  assertUsable();
+  if (kvRemote()) {
+    await send([['DEL', key]]);
+    return;
+  }
+  mem.delete(key);
+}
+
 export async function kvHGet(key: string, field: string): Promise<string | null> {
   assertUsable();
   if (kvRemote()) return ((await send([['HGET', key, field]]))[0] as string | null) ?? null;

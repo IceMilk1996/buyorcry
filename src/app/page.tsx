@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { DailyPreview } from '@/components/DailyPreview';
 import { ModeChoice } from '@/components/ModeChoice';
+import { NickPrompt } from '@/components/NickPrompt';
 import { TopBar } from '@/components/TopBar';
 
 /**
@@ -22,6 +23,9 @@ export default function Home() {
   return (
     <main className="flex flex-1 flex-col px-5 pb-[max(20px,env(safe-area-inset-bottom))]">
       <TopBar brand />
+
+      {/* 로그인 직후 한 번. 주소에 표가 없으면 아무것도 그리지 않는다 */}
+      <NickPrompt />
 
       <header className="anim-rise mt-3">
         <h1 className="text-[30px] font-extrabold leading-[1.15] tracking-[-0.01em]">

@@ -84,7 +84,15 @@ export async function GET(req: Request) {
      * 판이 시작되는데, 오늘의 챌린지는 하루 한 번뿐이라 그 한 번을 실수로 쓰게 된다.
      * 시작은 사용자가 명시적으로 눌러야 한다.
      */
-    const res = NextResponse.redirect(new URL('/', req.url));
+    /*
+     * 이름이 없으면 홈에서 한 번 물어보게 표를 단다.
+     *
+     * 홈이 스스로 판단하게 하지 않는 이유: 그러면 이름 없는 사람은 홈에
+     * 들어올 때마다 매번 모달을 보게 된다. 물어볼 자리는 '방금 로그인한
+     * 직후' 한 번이면 충분하고, 나중에 정할 곳은 마이페이지에 있다.
+     */
+    const dest = user.nick ? '/' : '/?welcome=nick';
+    const res = NextResponse.redirect(new URL(dest, req.url));
     res.cookies.set(COOKIE, signedCookieValue(user.id), cookieOptions());
     return res;
   } catch (e) {
