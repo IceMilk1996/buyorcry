@@ -31,8 +31,15 @@ export function TopBar({
   menu?: boolean;
 }) {
   const [open, setOpen] = useState(false);
-  const [user, setUser] = useState<{ id: string } | null>(null);
-  const [loginReady, setLoginReady] = useState(false);
+  /**
+   * 로그인 상태. null 은 '아직 안 물어봤다' 이지 '로그인 안 했다' 가 아니다.
+   *
+   * 예전엔 user/loginReady 를 각각 null·false 로 시작했는데, 그 조합이
+   * '로그인 안 했고 카카오도 연결 안 됨' 과 똑같이 생겼다. 그래서 메뉴를
+   * 열면 셋 중 제일 무서운 문구("카카오 로그인이 아직 연결되지 않았어요")가
+   * 한 프레임 떴다가 마이페이지로 바뀌었다. 모르는 상태를 따로 둔다.
+   */
+  const [me, setMe] = useState<{ user: { id: string } | null; loginReady: boolean } | null>(null);
   /** 못 불러온 것과 '아직 연결 안 됨' 을 구분한다 (ModeChoice 와 같은 이유) */
   const [loadFailed, setLoadFailed] = useState(false);
   const themePref = useSyncExternalStore(subscribeTheme, readThemePref, serverThemePref);
@@ -48,13 +55,15 @@ export function TopBar({
       try {
         const res = await fetch('/api/auth/me');
         if (!res.ok) throw new Error(String(res.status));
-        const me = await res.json();
-        setUser(me.user);
-        setLoginReady(Boolean(me.loginReady));
+        const data = await res.json();
+        setMe({ user: data.user ?? null, loginReady: Boolean(data.loginReady) });
         setLoadFailed(false);
       } catch {
+        /*
+         * 직전에 받아둔 값은 지우지 않는다. 두 번째로 열 때 잠깐 비었다가
+         * 다시 차오르면 그것도 깜빡임이다.
+         */
         setLoadFailed(true);
-        /* 메뉴는 부가 기능이라 실패해도 화면을 막지 않는다 */
       }
     })();
   }, [open]);
@@ -125,11 +134,16 @@ export function TopBar({
               메뉴는 홈에 자리가 없는 것만 맡는다.
             */}
             <nav className="mt-4 flex flex-col">
-              {user ? (
+              {me === null && !loadFailed ? (
+                /* 아직 모른다. 자리만 잡아둔다 — 높이가 바뀌면 시트가 들썩인다 */
+                <div className="flex h-[54px] items-center border-b border-line">
+                  <span className="h-[15px] w-[84px] animate-pulse rounded-full bg-bg" />
+                </div>
+              ) : me?.user ? (
                 <Item href="/my" onClick={() => setOpen(false)}>
                   마이페이지
                 </Item>
-              ) : loginReady ? (
+              ) : me?.loginReady ? (
                 <Item href="/api/auth/kakao">카카오로 로그인</Item>
               ) : (
                 <p className="border-b border-line py-5 text-[14px] text-ink3">
