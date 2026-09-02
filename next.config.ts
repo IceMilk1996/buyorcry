@@ -22,6 +22,8 @@ const nextConfig: NextConfig = {
      */
     '/r/[id]/opengraph-image': ['./src/assets/**'],
     '/api/share/[id]/image': ['./src/assets/**'],
+    /* 홈 카드도 같은 폴더에서 폰트와 껄무새 그림을 읽는다 */
+    '/opengraph-image': ['./src/assets/**'],
   },
 };
 
