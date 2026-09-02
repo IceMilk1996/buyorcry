@@ -26,6 +26,8 @@ export function CandleChart({
   slots,
   entryPrice,
   markNext = false,
+  showFuture = true,
+  growIn = false,
   className = '',
 }: {
   bars: Bar[];
@@ -44,6 +46,16 @@ export function CandleChart({
   entryPrice?: number | null;
   /** 다음에 열릴 칸을 표시할지 (플레이 중일 때만) */
   markNext?: boolean;
+  /**
+   * 아직 안 열린 칸들을 회색으로 깔지.
+   *
+   * 플레이 중에는 '앞으로 30턴 남았다' 는 정보라 켜둔다. 홈 맛보기처럼
+   * 남은 칸이 게임 정보가 아닌 화면에서는 "다음 칸" 표시 뒤로 큰 회색
+   * 덩어리만 남아서 오히려 지저분하다.
+   */
+  showFuture?: boolean;
+  /** 봉을 왼쪽부터 하나씩 자라나게 그릴지 (처음 그려질 때만) */
+  growIn?: boolean;
   className?: string;
 }) {
   /*
@@ -105,7 +117,7 @@ export function CandleChart({
       ))}
 
       {/* 앞으로 봉이 들어올 자리 — 비어 보이지 않게 아주 옅게 깔아준다 */}
-      {bars.length < n && (
+      {showFuture && bars.length < n && (
         <rect
           x={bars.length * slot}
           y={0}

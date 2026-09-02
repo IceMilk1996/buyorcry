@@ -54,6 +54,12 @@ const TTL_SEC = 14 * 24 * 60 * 60;
 
 const key = (date: string) => `daily:${date}`;
 
+/** 그날 몇 명이 끝냈는지. 홈에서 "오늘 N명이 도전했어요" 로 쓴다 */
+export async function countPlayed(date: string): Promise<number> {
+  const all = await hValuesJSON<DailyEntry>(key(date));
+  return all.length;
+}
+
 /** 이 사람이 오늘 이미 했는지 — 서버가 판단해야 우회가 막힌다 */
 export async function findTodayEntry(
   date: string,
