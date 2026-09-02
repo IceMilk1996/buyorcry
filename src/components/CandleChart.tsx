@@ -152,22 +152,33 @@ export function CandleChart({
           return (
             /* data-coach: 첫 안내가 이 자리를 가리킨다 */
             <g data-coach="next" className="marker-slide" style={{ transform: `translateX(${mx}px)` }}>
-              {/* 라벨·화살표는 그대로 두고 칸만 숨 쉰다 */}
-              <g className="anim-breathe">
-                <rect x={0} y={top} width={mw} height={H - top - 10} fill="var(--color-accent)" opacity="0.11" rx="5" />
-                <rect
-                  x={0}
-                  y={top}
-                  width={mw}
-                  height={H - top - 10}
-                  fill="none"
-                  stroke="var(--color-accent)"
-                  strokeWidth="1.2"
-                  strokeDasharray="3 3"
-                  opacity="0.75"
-                  rx="5"
-                />
-              </g>
+              {/*
+                채움과 테두리가 한 호흡으로 숨 쉰다. 다만 바닥값이 다르다 —
+                테두리는 0.55 아래로 안 내려간다. 예전엔 둘 다 0 가까이 내려가서
+                옅어지는 순간 칸이 통째로 사라졌고, 깜빡이기만 할 뿐 어디를
+                가리키는지는 절반의 시간 동안 알 수 없었다.
+              */}
+              <rect
+                className="anim-breathe"
+                x={0}
+                y={top}
+                width={mw}
+                height={H - top - 10}
+                fill="var(--color-accent)"
+                rx="5"
+              />
+              <rect
+                x={0}
+                y={top}
+                width={mw}
+                height={H - top - 10}
+                fill="none"
+                stroke="var(--color-accent)"
+                strokeWidth="1.6"
+                strokeDasharray="3.5 3"
+                className="anim-breathe-line"
+                rx="5"
+              />
               {/* 아래를 가리키는 꼭지 — 여기다, 라는 신호 */}
               <path
                 d={`M${mw / 2 - 4} ${top - 6} L${mw / 2 + 4} ${top - 6} L${mw / 2} ${top - 1} Z`}
@@ -177,7 +188,7 @@ export function CandleChart({
                 x={tx}
                 y={top - 10}
                 textAnchor="middle"
-                fontSize="11"
+                fontSize="12"
                 fontWeight="700"
                 fill="var(--color-accent)"
               >

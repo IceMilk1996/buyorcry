@@ -187,7 +187,17 @@ body {
  * 깜빡이는 것처럼 보이므로 테두리와 채움에만 건다.
  */
 @keyframes breathe {
-  0%, 100% { opacity: 0.5; }
+  0%, 100% { opacity: 0.1; }
+  50% { opacity: 0.3; }
+}
+
+/*
+ * 테두리도 같이 숨 쉬되 바닥을 높게 잡는다. 0 에 가깝게 내리면 옅어지는
+ * 순간 칸이 통째로 사라져서, 깜빡이기만 하고 어디를 가리키는지는 절반의
+ * 시간 동안 알 수 없다. 채움과 같은 2초라 둘이 한 호흡으로 움직인다.
+ */
+@keyframes breathe-line {
+  0%, 100% { opacity: 0.55; }
   50% { opacity: 1; }
 }
 
@@ -207,7 +217,8 @@ body {
   transform-box: view-box;
   animation: candle-grow 0.38s cubic-bezier(0.19, 0.83, 0.28, 1) both;
 }
-.anim-breathe { animation: breathe 2.6s ease-in-out infinite; }
+.anim-breathe { animation: breathe 2s ease-in-out infinite; }
+.anim-breathe-line { animation: breathe-line 2s ease-in-out infinite; }
 
 /* '다음 칸' 표시가 한 칸씩 미끄러져 간다. 새 봉이 자리 잡는 시간과 맞춘다 */
 .marker-slide { transition: transform 0.38s cubic-bezier(0.19, 0.83, 0.28, 1); }
