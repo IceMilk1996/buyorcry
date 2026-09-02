@@ -76,7 +76,7 @@ export function ModeChoice() {
   const endless = (
     <Link
       href="/play?mode=endless"
-      className="pressable flex min-h-[54px] items-center justify-between gap-3 rounded-btn border border-line px-[18px] py-3"
+      className="pressable flex h-[64px] items-center justify-between gap-3 rounded-btn border border-line px-[18px]"
     >
       <span className="flex flex-col items-start gap-0.5">
         <span className="text-[15px] font-bold tracking-tight text-ink">연습 게임</span>
@@ -148,7 +148,9 @@ export function ModeChoice() {
       </>
     );
     const cls =
-      'pressable flex min-h-[62px] w-full items-center justify-between gap-3 rounded-btn bg-brand px-[18px] py-3.5 text-left text-white';
+      /* 아래 '연습 게임' 과 높이를 정확히 맞춘다. 세로로 붙어 있는 두 카드는
+         높이가 몇 px만 달라도 어긋나 보인다 */
+      'pressable flex h-[64px] w-full items-center justify-between gap-3 rounded-btn bg-brand px-[18px] text-left text-onbrand';
     return onClick ? (
       <button type="button" onClick={onClick} className={cls}>
         {inner}

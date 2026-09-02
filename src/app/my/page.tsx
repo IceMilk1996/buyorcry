@@ -25,7 +25,7 @@ export default async function MyPage() {
           <p className="text-[15px] text-ink3">로그인하면 내 전적을 볼 수 있어요.</p>
           <Link
             href="/"
-            className="pressable h-[52px] rounded-btn bg-brand px-8 text-[16px] font-bold leading-[52px] text-white"
+            className="pressable h-[52px] rounded-btn bg-brand px-8 text-[16px] font-bold leading-[52px] text-onbrand"
           >
             홈으로
           </Link>
@@ -57,7 +57,7 @@ export default async function MyPage() {
           </p>
           <Link
             href="/"
-            className="pressable h-[52px] rounded-btn bg-brand px-8 text-[16px] font-bold leading-[52px] text-white"
+            className="pressable h-[52px] rounded-btn bg-brand px-8 text-[16px] font-bold leading-[52px] text-onbrand"
           >
             시작하기
           </Link>

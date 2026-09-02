@@ -14,7 +14,7 @@ const DOWN = 'var(--color-down)';
 const INK3 = 'var(--color-ink3)';
 const ACCENT = 'var(--color-accent)';
 const LINE = 'var(--color-line)';
-const MINT = 'var(--color-mint)';
+const MINT = 'var(--color-brand)';
 
 type P = { className?: string };
 

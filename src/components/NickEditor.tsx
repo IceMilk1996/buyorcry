@@ -73,7 +73,7 @@ export function NickEditor({ nick }: { nick: string | null }) {
           type="button"
           onClick={() => void save()}
           disabled={!value.trim() || busy}
-          className="pressable h-[46px] shrink-0 rounded-btn bg-brand px-5 text-[15px] font-bold text-white disabled:bg-bg disabled:text-ink3"
+          className="pressable h-[46px] shrink-0 rounded-btn bg-brand px-5 text-[15px] font-bold text-onbrand disabled:bg-bg disabled:text-ink3"
         >
           저장
         </button>

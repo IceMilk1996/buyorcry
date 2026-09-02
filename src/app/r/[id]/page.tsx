@@ -45,7 +45,7 @@ export default async function SharePage({ params }: { params: Promise<{ id: stri
         </p>
         <Link
           href="/"
-          className="pressable mt-7 flex h-[54px] items-center justify-center rounded-btn bg-brand px-9 text-[16px] font-bold text-white"
+          className="pressable mt-7 flex h-[54px] items-center justify-center rounded-btn bg-brand px-9 text-[16px] font-bold text-onbrand"
         >
           나도 해보기
         </Link>
@@ -144,7 +144,7 @@ export default async function SharePage({ params }: { params: Promise<{ id: stri
 
       <Link
         href="/"
-        className="pressable mt-6 flex h-[58px] items-center justify-center rounded-btn bg-brand text-[17px] font-bold text-white"
+        className="pressable mt-6 flex h-[58px] items-center justify-center rounded-btn bg-brand text-[17px] font-bold text-onbrand"
       >
         나도 해보기
       </Link>

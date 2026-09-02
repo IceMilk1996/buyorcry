@@ -49,7 +49,7 @@ export default function HowPage() {
           '비활성' 처럼 보이는데, 관망은 중립이지 못 누르는 게 아니다.
           쉬운 말을 밑에 달아서 여기가 용어 사전 노릇을 한다.
         */}
-        <Step n={2} title="셋 중 하나를 골라요">
+        <Step n={2} title="셋 중 하나를 골라요" panel={false}>
           <div className="flex w-full max-w-[260px] gap-2">
             <Choice label="매수" plain="사기" tone="up" />
             <Choice label="관망" plain="그대로 두기" tone="flat" />
@@ -71,7 +71,7 @@ export default function HowPage() {
         <Step n={4} title="30턴 뒤, 안 팔고 버틴 결과와 비교">
           {/* 수치가 있어야 "비교" 가 무슨 뜻인지 한눈에 들어온다 */}
           <div className="w-full max-w-[240px] space-y-2">
-            <ResultRow label="내 판단" value="+31%" pct={100} tone="mint" />
+            <ResultRow label="내 판단" value="+31%" pct={100} tone="brand" />
             <ResultRow label="존버" value="+12%" pct={39} tone="grey" />
           </div>
           <Note>첫 턴에 사서 끝까지 안 판 경우예요. 예시 수치.</Note>
@@ -80,7 +80,7 @@ export default function HowPage() {
 
       <Link
         href="/play?mode=endless"
-        className="pressable mt-7 flex h-[58px] items-center justify-center gap-2 rounded-btn bg-brand text-[17px] font-bold text-white"
+        className="pressable mt-7 flex h-[58px] items-center justify-center gap-2 rounded-btn bg-brand text-[17px] font-bold text-onbrand"
       >
         한 판 해보면서 익히기
         <span aria-hidden>→</span>
@@ -97,12 +97,21 @@ function Step({
   title,
   children,
   bare,
+  panel = true,
 }: {
   n: number;
   title: string;
   children: React.ReactNode;
   /** 그림이 없는 단계. 빈 회색 판이 남지 않게 안쪽 상자를 통째로 뺀다 */
   bare?: boolean;
+  /**
+   * 안쪽 배경판을 깔지.
+   *
+   * 그림에는 판이 있는 게 낫다 — 여백이 정리된다. 하지만 2단계는 안에 든
+   * 것이 이미 테두리 있는 상자 세 개라, 판을 또 깔면 상자 안의 상자가 되고
+   * 다크모드에서는 그 판이 새까맣게 보인다.
+   */
+  panel?: boolean;
 }) {
   return (
     <li className="rounded-card bg-card p-5">
@@ -115,7 +124,11 @@ function Step({
       {bare ? (
         <div className="mt-2.5">{children}</div>
       ) : (
-        <div className="mt-4 flex flex-col items-center gap-3 rounded-2xl bg-bg px-4 py-4">
+        <div
+          className={`mt-4 flex flex-col items-center gap-3 ${
+            panel ? 'rounded-xl bg-bg px-4 py-4' : ''
+          }`}
+        >
           {children}
         </div>
       )}
@@ -159,23 +172,23 @@ function ResultRow({
   label: string;
   value: string;
   pct: number;
-  tone: 'mint' | 'grey';
+  tone: 'brand' | 'grey';
 }) {
   return (
     <div className="flex items-center gap-2.5">
       <span
-        className={`w-[46px] shrink-0 text-[12px] font-bold ${tone === 'mint' ? 'text-mint' : 'text-ink3'}`}
+        className={`w-[46px] shrink-0 text-[12px] font-bold ${tone === 'brand' ? 'text-accent' : 'text-ink3'}`}
       >
         {label}
       </span>
       <span className="h-[14px] flex-1 overflow-hidden rounded-full bg-line">
         <span
-          className={`block h-full rounded-full ${tone === 'mint' ? 'bg-mint' : 'bg-ink3 opacity-45'}`}
+          className={`block h-full rounded-full ${tone === 'brand' ? 'bg-brand' : 'bg-ink3 opacity-45'}`}
           style={{ width: `${pct}%` }}
         />
       </span>
       <span
-        className={`w-[42px] shrink-0 text-right text-[12.5px] font-bold ${tone === 'mint' ? 'text-mint' : 'text-ink3'}`}
+        className={`w-[42px] shrink-0 text-right text-[12.5px] font-bold ${tone === 'brand' ? 'text-accent' : 'text-ink3'}`}
       >
         {value}
       </span>

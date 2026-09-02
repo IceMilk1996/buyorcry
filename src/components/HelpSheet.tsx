@@ -49,12 +49,12 @@ export function HelpSheet({ onClose, onReplay }: { onClose: () => void; onReplay
             onClick={onReplay}
             className="pressable h-[52px] flex-1 rounded-btn bg-bg text-[15px] font-bold text-ink2"
           >
-            화면에서 짚어주기
+            화면에서 보기
           </button>
           <button
             type="button"
             onClick={onClose}
-            className="pressable h-[52px] flex-1 rounded-btn bg-brand text-[16px] font-bold text-white"
+            className="pressable h-[52px] flex-1 rounded-btn bg-brand text-[16px] font-bold text-onbrand"
           >
             계속하기
           </button>

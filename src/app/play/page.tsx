@@ -163,7 +163,7 @@ export default function PlayPage() {
         <button
           type="button"
           onClick={() => void start()}
-          className="pressable mt-6 h-[52px] rounded-btn bg-brand px-8 text-[16px] font-bold text-white"
+          className="pressable mt-6 h-[52px] rounded-btn bg-brand px-8 text-[16px] font-bold text-onbrand"
         >
           다시 시도
         </button>

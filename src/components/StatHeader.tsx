@@ -74,7 +74,7 @@ export function StatHeader({
       {/* 점수판. 결과 화면과 같은 말("존버보다 … 잘했어요")을 쓴다 */}
       <div
         data-coach="score"
-        className="mt-2.5 flex items-center justify-between gap-2 rounded-2xl bg-card px-3.5 py-2"
+        className="mt-2.5 flex items-center justify-between gap-2 rounded-btn bg-card px-3.5 py-2"
       >
         <span className="text-[13px] font-semibold text-ink2">
           {ahead || behind ? (

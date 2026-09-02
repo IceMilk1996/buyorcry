@@ -119,7 +119,7 @@ export function Tour({ onDone }: { onDone: () => void }) {
             <p
               key={note.target}
               style={{ ...labelStyle(note, r, vp), transform: `rotate(${note.tilt ?? 0}deg)` }}
-              className="absolute text-[13.5px] font-semibold leading-snug text-[#ffe9a8] [text-shadow:0_1px_2px_rgba(0,0,0,0.35),0_0_8px_rgba(0,0,0,0.28)]"
+              className="absolute text-[13.5px] font-semibold leading-snug text-white [text-shadow:0_1px_2px_rgba(0,0,0,0.35),0_0_8px_rgba(0,0,0,0.28)]"
             >
               {note.lines.map((l, i) => (
                 <span key={i} className="block">
@@ -162,10 +162,11 @@ function labelStyle(note: Note, r: DOMRect, vp: { w: number; h: number }): React
 /** 이름표에서 대상으로 휘어 들어가는 짧은 화살표 */
 function Arrow({ note, r }: { note: Note; r: DOMRect }) {
   /*
-   * 이름표보다 화살표를 조금 진하게 둔다. 글자는 면이라 옅어도 읽히지만
-   * 화살표는 2px 선이라 같이 낮추면 사라진다.
+   * 노란색이었는데 흰색으로 바꿨다. 화면에 쓰는 색을 초록 하나로 좁히면서
+   * 안내에만 쓰이던 노랑이 넷째 색으로 남는 게 어색해졌다. 어두운 스크림
+   * 위에서는 흰색이 제일 잘 읽히기도 한다.
    */
-  const C = '#f2c94c';
+  const C = 'rgba(255,255,255,0.9)';
 
   if (note.side === 'right') {
     const y = r.top + r.height / 2;
