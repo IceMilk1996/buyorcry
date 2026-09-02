@@ -180,9 +180,15 @@ body {
   80% { transform: translateX(3px); }
 }
 
-@keyframes candle-drop {
-  from { transform: translateY(-10px) scaleY(0.7); opacity: 0; }
-  to { transform: translateY(0) scaleY(1); opacity: 1; }
+/*
+ * 플레이 중 '다음 칸' 표시. 입력을 기다리는 동안 화면이 완전히 멈춰
+ * 있으면 딱딱하게 느껴진다. 아주 느리게 숨만 쉬게 해서, 여기가 살아
+ * 있는 자리라는 것만 알린다. 라벨까지 같이 밝아졌다 어두워지면
+ * 깜빡이는 것처럼 보이므로 테두리와 채움에만 건다.
+ */
+@keyframes breathe {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
 }
 
 @keyframes sheen {
@@ -194,7 +200,51 @@ body {
 .anim-rise { animation: rise-in 0.34s cubic-bezier(0.22, 1, 0.36, 1) both; }
 .anim-bob { animation: bob 3.2s ease-in-out infinite; }
 .anim-shake { animation: shake 0.4s ease-in-out; }
-.anim-candle { animation: candle-drop 0.26s cubic-bezier(0.22, 1.2, 0.36, 1) both; }
+/* 새 봉도 홈과 같은 방식으로 — 시가에서 종가 쪽으로 자란다.
+   예전엔 위에서 툭 떨어뜨렸는데(translateY), 값이 내려간 봉도 위에서
+   내려오는 바람에 움직임이 시세와 따로 놀았다 */
+.anim-candle {
+  transform-box: view-box;
+  animation: candle-grow 0.38s cubic-bezier(0.19, 0.83, 0.28, 1) both;
+}
+.anim-breathe { animation: breathe 2.6s ease-in-out infinite; }
+
+/* '다음 칸' 표시가 한 칸씩 미끄러져 간다. 새 봉이 자리 잡는 시간과 맞춘다 */
+.marker-slide { transition: transform 0.38s cubic-bezier(0.19, 0.83, 0.28, 1); }
+
+/*
+ * 봉이 시가에서 종가 쪽으로 자라나며 나타난다.
+ *
+ * 예전에는 차트 전체를 clip-path 로 왼쪽부터 쓸어서 보여줬는데, 그러면
+ * 축·경계선·"다음 칸" 표시까지 같이 늦게 나타나서 화면이 덜 그려진 것처럼
+ * 보였다. 지금은 나머지를 한 번에 그리고 봉만 순서대로 자란다.
+ *
+ * 방향이 시세와 같아야 한다. 양봉은 아래에서 위로 올라오고, 음봉은 위에서
+ * 아래로 내려온다. 봉마다 다른 값이라 --cdy 로 넘겨받는다(양봉 +, 음봉 −).
+ *
+ * 가로 이동은 일부러 없다. 같이 주면 그쪽이 눈에 먼저 들어와서 '올랐나
+ * 내렸나' 가 묻힌다. 게다가 가로는 모든 봉이 같은 방향이라 정보가 없다.
+ *
+ * transform-origin 은 그 봉의 '시가' 높이다. 시가는 보통 앞 봉의 종가와
+ * 같으므로, 앞 봉이 끝난 자리에서 다음 봉이 이어져 나온다.
+ *
+ * 간격(17ms)이 길이(0.52s)보다 훨씬 짧은 건 의도다. 한 번에 30개쯤이
+ * 동시에 움직여서 하나의 물결로 읽힌다. 간격을 길이에 가깝게 두면 봉이
+ * 하나씩 따로 '톡톡' 튀어나오는 것처럼 끊겨 보인다.
+ */
+.anim-grow {
+  transform-box: view-box;
+  will-change: transform, opacity;
+  animation: candle-grow 0.52s cubic-bezier(0.19, 0.83, 0.28, 1) both;
+}
+@keyframes candle-grow {
+  from {
+    transform: translateY(var(--cdy, 0px)) scaleY(0.62);
+    opacity: 0;
+  }
+  45% { opacity: 1; }
+  to { transform: translateY(0) scaleY(1); opacity: 1; }
+}
 
 /* 눌리는 느낌 — 토스 버튼의 핵심 */
 .pressable {

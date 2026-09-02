@@ -140,29 +140,41 @@ export function CandleChart({
           const mw = Math.max(slot, 11);
           const mx = Math.min(bars.length * slot + slot / 2 - mw / 2, W - mw);
           const top = 24;
+          /*
+           * 안쪽은 x=0 기준으로 그리고 자리는 transform 으로 잡는다.
+           *
+           * rect 의 x 를 매 턴 새로 계산하면 표시가 순간이동한다. 그 순간
+           * 새 봉도 같이 나타나니, 표시가 옮겨간 자리에서 봉이 튀어나오는
+           * 것처럼 보였다. transform 은 전환이 걸리므로 한 칸 미끄러진다.
+           * (x/y 같은 geometry 속성은 브라우저별 전환 지원이 고르지 않다)
+           */
+          const tx = Math.min(Math.max(mw / 2, 16 - mx), W - 16 - mx);
           return (
             /* data-coach: 첫 안내가 이 자리를 가리킨다 */
-            <g data-coach="next">
-              <rect x={mx} y={top} width={mw} height={H - top - 10} fill="var(--color-accent)" opacity="0.11" rx="5" />
-              <rect
-                x={mx}
-                y={top}
-                width={mw}
-                height={H - top - 10}
-                fill="none"
-                stroke="var(--color-accent)"
-                strokeWidth="1.2"
-                strokeDasharray="3 3"
-                opacity="0.75"
-                rx="5"
-              />
+            <g data-coach="next" className="marker-slide" style={{ transform: `translateX(${mx}px)` }}>
+              {/* 라벨·화살표는 그대로 두고 칸만 숨 쉰다 */}
+              <g className="anim-breathe">
+                <rect x={0} y={top} width={mw} height={H - top - 10} fill="var(--color-accent)" opacity="0.11" rx="5" />
+                <rect
+                  x={0}
+                  y={top}
+                  width={mw}
+                  height={H - top - 10}
+                  fill="none"
+                  stroke="var(--color-accent)"
+                  strokeWidth="1.2"
+                  strokeDasharray="3 3"
+                  opacity="0.75"
+                  rx="5"
+                />
+              </g>
               {/* 아래를 가리키는 꼭지 — 여기다, 라는 신호 */}
               <path
-                d={`M${mx + mw / 2 - 4} ${top - 6} L${mx + mw / 2 + 4} ${top - 6} L${mx + mw / 2} ${top - 1} Z`}
+                d={`M${mw / 2 - 4} ${top - 6} L${mw / 2 + 4} ${top - 6} L${mw / 2} ${top - 1} Z`}
                 fill="var(--color-accent)"
               />
               <text
-                x={Math.min(Math.max(mx + mw / 2, 16), W - 16)}
+                x={tx}
                 y={top - 10}
                 textAnchor="middle"
                 fontSize="11"
@@ -221,17 +233,41 @@ export function CandleChart({
         const top = y(Math.max(b.o, b.c));
         const bottom = y(Math.min(b.o, b.c));
         const isLast = i === bars.length - 1;
+        /*
+         * 등장 방향을 봉이 실제로 움직인 방향과 맞춘다.
+         *
+         *  · 가로: 오른쪽에서 왼쪽으로 — 차트가 흘러오는 방향
+         *  · 세로: 양봉은 아래에서 위로, 음봉은 위에서 아래로
+         *
+         * --cdy 만 봉마다 다르고 나머지는 CSS 가 갖는다. 축(transform-origin)은
+         * 시가 높이라, 살짝 붙는 크기 변화도 종가 쪽으로만 벌어진다.
+         */
+        const entering = growIn || (isLast && !past);
+        const enterStyle = entering
+          ? ({
+              transformOrigin: `${x(i)}px ${y(b.o)}px`,
+              /*
+               * 세로로만 움직인다.
+               *
+               * 가로 이동을 같이 주면 그쪽이 눈에 먼저 들어와서, 정작
+               * 보여주려던 '올랐나 내렸나' 가 묻힌다. 가로는 어차피
+               * 모든 봉이 같은 방향이라 정보가 없다.
+               *
+               * 거리는 차트 높이에 비례한다. 화면마다 세로 크기가
+               * 달라서(홈 맛보기 ~200, 플레이 ~420) 고정값을 쓰면
+               * 한쪽에서만 눈에 띈다.
+               */
+              '--cdy': `${up ? '' : '-'}${Math.max(14, Math.round(H * 0.07))}px`,
+              ...(growIn ? { animationDelay: `${i * 17}ms` } : {}),
+            } as React.CSSProperties)
+          : undefined;
 
         return (
           <g
             key={i}
             opacity={past ? 0.55 : 1}
-            className={isLast && !past ? 'anim-candle' : undefined}
-            style={
-              isLast && !past
-                ? { transformOrigin: `${x(i)}px ${(top + bottom) / 2}px` }
-                : undefined
-            }
+            className={growIn ? 'anim-grow' : isLast && !past ? 'anim-candle' : undefined}
+            style={enterStyle}
           >
             <line
               x1={x(i)}
