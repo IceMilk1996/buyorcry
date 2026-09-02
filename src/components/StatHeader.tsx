@@ -1,5 +1,6 @@
 'use client';
 
+import { useCountUp } from '@/lib/client/useCountUp';
 import { Mascot, moodFor } from './Mascot';
 
 export function fmtWon(n: number): string {
@@ -37,6 +38,20 @@ export function StatHeader({
   const pnlColor = pnl > 0 ? 'text-up' : pnl < 0 ? 'text-down' : 'text-ink3';
 
   /*
+   * 매매할 때마다 자산이 뛰는데, 값을 그냥 갈아끼우면 얼마나 어느 쪽으로
+   * 움직였는지 안 보인다. 굴려서 보여준다.
+   *
+   * 수익률도 같이 굴린다. 같은 덩어리 안에서 금액만 구르고 % 는 뚝 바뀌면
+   * 둘이 따로 노는 게 눈에 걸린다. 둘 다 같은 프레임에 시작하고 같은
+   * 곡선을 쓰니 끝까지 붙어서 움직인다.
+   *
+   * 표정(mood)과 색은 굴리지 않는다 — 최종값 기준이라야 중간에 빨강↔파랑을
+   * 오가지 않는다.
+   */
+  const shownEquity = useCountUp(equity);
+  const shownPnl = useCountUp(pnl);
+
+  /*
    * 이 게임의 점수는 수익률이 아니라 존버와의 차이다. 그런데 지금까지는
    * 그 차이를 결과 화면에서 처음 봤다 — 30턴 내내 이기고 있는지 지고 있는지
    * 모른 채 버튼을 누르는 셈이었다. "규칙 3번"을 글로 읽히는 것보다
@@ -55,13 +70,15 @@ export function StatHeader({
         <div>
           <div className="text-[13px] font-medium text-ink3">내 자산</div>
           <div className="mt-1 flex items-baseline gap-1.5">
-            <span className="text-[34px] font-bold leading-none tracking-tight">
-              {fmtWon(equity)}
+            {/* tabular-nums: 폭이 같은 숫자꼴. 없으면 구르는 동안 자릿수마다
+                폭이 달라져서 옆의 '원' 이 덜덜 떨린다 */}
+            <span className="text-[34px] font-bold leading-none tracking-tight tabular-nums">
+              {fmtWon(shownEquity)}
             </span>
             <span className="text-[17px] font-semibold text-ink2">원</span>
           </div>
-          <div className={`mt-1.5 text-[15px] font-semibold ${pnlColor}`}>
-            {fmtPct(pnl)}
+          <div className={`mt-1.5 text-[15px] font-semibold tabular-nums ${pnlColor}`}>
+            {fmtPct(shownPnl)}
             <span className="ml-1.5 text-[13px] font-medium text-ink3">
               {holding ? '주식 있음' : '현금'}
             </span>
