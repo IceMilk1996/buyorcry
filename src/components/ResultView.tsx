@@ -116,17 +116,20 @@ export function ResultView({
    * 링크 공유.
    * 모바일에서는 OS 공유 시트가 뜬다 — 카톡으로 바로 보낼 수 있다.
    * 데스크톱은 클립보드 복사로 떨어진다.
+   *
+   * 링크만 보낸다. 예전에는 앞에 제목·성적·행동 이모지까지 붙여 보냈는데,
+   * 붙여넣으면 링크 앞에 대여섯 줄이 먼저 나와서 지저분했다. 게다가 그
+   * 내용은 링크를 펼쳤을 때 미리보기 카드가 이미 보여주는 것이라, 같은
+   * 말을 두 번 하고 있었다.
    */
   async function share() {
-    const text = shareText(result);
     const url = shareUrl();
-    const payload = url ? { text, url } : { text };
     try {
       if (navigator.share) {
-        await navigator.share(payload);
+        await navigator.share(url ? { url } : { text: shareText(result) });
         return;
       }
-      await navigator.clipboard.writeText(url ? `${text}\n${url}` : text);
+      await navigator.clipboard.writeText(url || shareText(result));
       setCopied(true);
       setTimeout(() => setCopied(false), 1800);
     } catch {
@@ -343,7 +346,7 @@ export function ResultView({
         <button
           type="button"
           onClick={onRetry}
-          className="pressable h-[58px] rounded-btn bg-brand text-[17px] font-bold text-white"
+          className="pressable h-[58px] rounded-btn bg-brand text-[17px] font-bold text-onbrand"
         >
           {mode === 'daily' ? '무한 모드로 한 판 더' : '한 판 더'}
         </button>
@@ -385,6 +388,9 @@ function Cell({
 
 /**
  * 30턴을 10칸으로 압축한다. 길면 아무도 공유하지 않는다.
+ *
+ * 지금은 링크를 만들지 못한 경우(공유 ID 가 없을 때)의 대비책으로만 쓴다.
+ * 링크가 있으면 링크만 보낸다 — 미리보기 카드가 같은 내용을 보여준다.
  *
  * ⚠️ 내 수익률은 절대 넣지 않는다.
  *    알파와 나란히 두면 `존버 수익률 = 내 수익률 − 알파` 가 정확히 나오고,
