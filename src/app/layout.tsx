@@ -19,8 +19,25 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="ko" className="h-full antialiased">
+    <html lang="ko" className="h-full antialiased" suppressHydrationWarning>
       <head>
+        {/*
+          테마를 첫 칠하기 전에 정한다.
+          React 가 붙은 뒤에 정하면 라이트로 한 프레임 번쩍인 다음 다크로
+          바뀐다. 그래서 <head> 안에서 동기로 실행되는 인라인 스크립트로
+          html[data-theme] 을 먼저 박아둔다. CSS 는 그것만 본다.
+          '시스템' 을 고른 사람은 OS 설정이 바뀌면 즉시 따라가야 하므로
+          여기서 바로 구독까지 걸어둔다 — 플레이 화면에는 메뉴가 없어서
+          컴포넌트에 두면 그 화면에서만 안 따라간다.
+        */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){var K='buyorcry:theme';var m=window.matchMedia('(prefers-color-scheme: dark)');
+function get(){try{var v=localStorage.getItem(K);return v==='light'||v==='dark'?v:'system'}catch(e){return 'system'}}
+function put(){var p=get();document.documentElement.dataset.theme=(p==='dark'||(p==='system'&&m.matches))?'dark':'light'}
+put();m.addEventListener('change',put)})()`,
+          }}
+        />
         {/* Pretendard — 한국어 웹에서 사실상 표준. 못 받아오면 Apple SD Gothic Neo로 떨어진다 */}
         <link
           rel="stylesheet"

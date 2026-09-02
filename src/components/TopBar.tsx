@@ -1,8 +1,15 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useSyncExternalStore } from 'react';
 import Link from 'next/link';
 import { Logo } from './Logo';
+import {
+  readThemePref,
+  serverThemePref,
+  setThemePref,
+  subscribeTheme,
+  type ThemePref,
+} from '@/lib/client/theme';
 
 /**
  * 상단바와 메뉴.
@@ -28,6 +35,7 @@ export function TopBar({
   const [loginReady, setLoginReady] = useState(false);
   /** 못 불러온 것과 '아직 연결 안 됨' 을 구분한다 (ModeChoice 와 같은 이유) */
   const [loadFailed, setLoadFailed] = useState(false);
+  const themePref = useSyncExternalStore(subscribeTheme, readThemePref, serverThemePref);
 
   /*
    * 열 때마다 다시 읽는다.
@@ -132,6 +140,24 @@ export function TopBar({
               )}
             </nav>
 
+            {/*
+              테마는 메뉴 안에 둔다. 자주 바꾸는 설정이 아니라서 화면에
+              상시로 자리를 줄 만큼은 아니고, 그렇다고 없으면 시스템이
+              밝은데 밤에 어둡게 보고 싶은 사람이 방법이 없다.
+
+              '시스템' 을 남겨둔 이유: 이게 기본값이고, 한 번 라이트나
+              다크를 고르면 OS 가 밤에 어두워져도 안 따라간다. 되돌아갈
+              길이 있어야 한다.
+            */}
+            <div className="mt-5 flex items-center justify-between">
+              <span className="text-[14px] font-bold text-ink2">화면</span>
+              <div className="flex gap-1 rounded-full bg-bg p-1">
+                <ThemeChip now={themePref} value="system" label="시스템" />
+                <ThemeChip now={themePref} value="light" label="라이트" />
+                <ThemeChip now={themePref} value="dark" label="다크" />
+              </div>
+            </div>
+
             <button
               type="button"
               onClick={() => setOpen(false)}
@@ -143,6 +169,30 @@ export function TopBar({
         </div>
       )}
     </>
+  );
+}
+
+function ThemeChip({
+  now,
+  value,
+  label,
+}: {
+  now: ThemePref;
+  value: ThemePref;
+  label: string;
+}) {
+  const on = now === value;
+  return (
+    <button
+      type="button"
+      onClick={() => setThemePref(value)}
+      aria-pressed={on}
+      className={`h-[30px] rounded-full px-3 text-[12.5px] font-bold transition-colors ${
+        on ? 'bg-card text-ink shadow-sm' : 'text-ink3'
+      }`}
+    >
+      {label}
+    </button>
   );
 }
 
